@@ -1,6 +1,7 @@
 // src/App.js
 import React from 'react';
 import mockData from './mockData';
+import './App.css';
 
 function App() {
   return (
