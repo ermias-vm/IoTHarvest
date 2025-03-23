@@ -1,0 +1,53 @@
+/* Centrar completamente el contenido en la pantalla */
+body, html {
+  background-color: #7ca982;
+}
+
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor principal */
+.background-container {
+  background-color: #cce6cc;
+  height: 92vh;
+  width: 205vh;
+  border-radius: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 2);
+}
+
+/* Estilos generales */
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+/* Ajustes en la tabla */
+table {
+  border-collapse: collapse;
+  margin: 20px auto;
+  width: 90%; /* Ajustar el tamaño de la tabla */
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #7ca982;
+}
+
+th {
+  background-color: #7ca982;
+}
+
+td {
+  background-color: #000000;
+  color: white; /* Para que el texto sea visible */
+}
+
+h1 {
+  margin-top: 0;
+  padding-top: 20px;
+  text-align: center;
+}
