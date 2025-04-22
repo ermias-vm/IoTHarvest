@@ -1,15 +1,21 @@
-# predict.py
+import sys
 from tensorflow.keras.models import load_model
-from PIL import Image
+from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 
-model = load_model('leaf_health_model.h5')
-
-def predict(image_path):
-    img = Image.open(image_path).resize((224, 224))
-    img_array = np.expand_dims(np.array(img) / 255.0, axis=0)
+def predict_image(model, image_path):
+    img = load_img(image_path, target_size=(224, 224))
+    img_array = img_to_array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
     prediction = model.predict(img_array)
-    return "Healthy" if prediction > 0.5 else "Unhealthy"
+    return "Healthy" if prediction[0][0] > 0.5 else "Unhealthy"
 
-# Example usage
-print(predict("test_image.jpg"))
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python predict.py <image_path>")
+        sys.exit(1)
+    
+    image_path = sys.argv[1]
+    model = load_model('leaf_health_model.h5')
+    result = predict_image(model, image_path)
+    print(f"Prediction: {result}")

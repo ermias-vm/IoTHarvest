@@ -4,6 +4,8 @@ from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from sklearn.utils import class_weight
+import numpy as np
 import matplotlib.pyplot as plt
 import os
 
@@ -80,12 +82,21 @@ callbacks = [
     )
 ]
 
+# Calculate class weights
+class_weights = class_weight.compute_class_weight(
+    'balanced',
+    classes=np.unique(train_generator.classes),
+    y=train_generator.classes
+)
+class_weights = dict(enumerate(class_weights))
+
 # ===== 5. Training =====
 history = model.fit(
     train_generator,
     epochs=EPOCHS,
     validation_data=val_generator,
-    callbacks=callbacks
+    callbacks=callbacks,
+    class_weight=class_weights
 )
 
 # ===== 6. Evaluation =====

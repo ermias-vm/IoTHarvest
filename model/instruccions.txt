@@ -3,7 +3,8 @@
 
 # entrenar model(no cal si tenim leaf_health_model.h5)
 # per a canviar rondes canviar variable EPOCHS
+# NO ENTRENAR si no esta el dataset amb les imatges!!!!
 python3 model_training.py
 
 # processar imatge 
-python3 predict.py nom_imatge
+python3 predict.py path_imatge
