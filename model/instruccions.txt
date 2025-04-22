@@ -1,0 +1,9 @@
+
+# Instruccions:
+
+# entrenar model(no cal si tenim leaf_health_model.h5)
+# per a canviar rondes canviar variable EPOCHS
+python3 model_training.py
+
+# processar imatge 
+python3 predict.py nom_imatge
