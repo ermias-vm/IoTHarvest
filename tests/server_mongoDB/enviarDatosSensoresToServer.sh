@@ -3,7 +3,9 @@
 # Configuración por defecto
 NUM_ENVIOS=10  # Número de envíos por defecto
 INTERVALO=1    # Intervalo entre envíos en segundos
-SERVER_URL="http://localhost:1500/api/sensores"
+SERVER_URL="http://172.16.4.48:1500/api/sensores"
+#SERVER_URL="http://localhost:1500/api/sensores"
+
 
 # Verificar argumentos
 if [[ $# -ge 1 ]]; then
