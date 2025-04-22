@@ -57,15 +57,15 @@ body, html {
   top: 4vh;
   left: 4vh;
   border-radius: 50px;
+
+  display: flex;
+  justify-content: center;
+  padding-top: 1vh;
 }
 
 .air-humidity-title {
   font-size: 0.5rem;
   font-weight: bold;
-  position: absolute;
-  top: 1vh;
-  left: 13vh;
-  transform: translateX(-50%);
   color: #000;
 }
 
@@ -77,15 +77,15 @@ body, html {
   top: 4vh;
   left: 47vh;
   border-radius: 50px;
+
+  display: flex;
+  justify-content: center;
+  padding-top: 1vh;
 }
 
 .ground-humidity-title {
   font-size: 0.5rem;
   font-weight: bold;
-  position: absolute;
-  top: 1vh;
-  left: 13vh;
-  transform: translateX(-50%);
   color: #000;
 }
 
@@ -97,15 +97,15 @@ body, html {
   top: 38vh;
   left: 4vh;
   border-radius: 50px;
+
+  display: flex;
+  justify-content: center;
+  padding-top: 1vh;
 }
 
 .temperature-title {
   font-size: 0.5rem;
   font-weight: bold;
-  position: absolute;
-  top: 1vh;
-  left: 13vh;
-  transform: translateX(-50%);
   color: #000;
 }
 
@@ -117,14 +117,38 @@ body, html {
   top: 38vh;
   left: 47vh;
   border-radius: 50px;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 1vh;
 }
 
 .real-time-title {
   font-size: 0.5rem;
   font-weight: bold;
-  position: absolute;
-  top: 1vh;
-  left: 13vh;
-  transform: translateX(-50%);
   color: #000;
+  text-align: center;
+  width: 100%;
+}
+
+.real-time-content {
+  margin-top: 0.1vh;
+  font-size: 1rem;
+  color: #000;
+  width: 100%;
+}
+
+.real-time-data {
+  text-align: left;
+  padding-left: 5vh;
+  padding-right: 2vh;
+  line-height: 1.6;
+}
+
+.time-display {
+  text-align: center;
+  width: 100%;
+  margin-top: 3vh;
 }
