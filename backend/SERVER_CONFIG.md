@@ -57,7 +57,7 @@ donde `XXXX` indicará si la conexión se ha realizado en **modo LOCAL** o **mod
 
 ## 📤 Enviar Datos de Prueba
 
-Para enviar datos de prueba al servidor y almacenarlos, ejecuta el script de envío siguiendo las instrucciones disponibles en [ENVIAR_DATOS_PRUEBA.md](../tests/server_mongoDB/ENVIAR_DATOS_PRUEBA.md).
+Para enviar datos de prueba al servidor y almacenarlos, ejecuta el script de envío siguiendo las instrucciones disponibles en [ENVIAR_DATOS_PRUEBA.md](../scripts/ENVIAR_DATOS_PRUEBA.md).
 
 ---
 
