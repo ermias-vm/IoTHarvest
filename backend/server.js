@@ -28,7 +28,8 @@ mongoose.connect(USED_DB, {
 // Esquema para los datos de sensores
 const sensorSchema = new mongoose.Schema({
   temperatura: { type: Number, required: true },
-  humedad: { type: Number, required: true },
+  humedad_aire: { type: Number, required: true },
+  humedad_suelo: { type: Number, required: true },
   bateria: { type: Number, required: true },
   timestamp: { type: Date, default: Date.now }
 }, { collection: 'sensorsData' });
@@ -42,10 +43,10 @@ function actualizarCache(datos) {
 
 // Ruta para recibir datos (POST)
 app.post('/api/sensores', async (req, res) => {
-  const { temperatura, humedad, bateria } = req.body;
+  const { temperatura, humedad_aire, humedad_suelo, bateria } = req.body;
   try {
-    const datos = { temperatura, humedad, bateria, timestamp: new Date() };
-    
+    const datos = { temperatura, humedad_aire, humedad_suelo, bateria, timestamp: new Date() };
+
     // Actualizar la caché antes de guardar en la base de datos
     actualizarCache(datos);
 
