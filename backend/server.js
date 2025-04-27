@@ -98,5 +98,5 @@ app.get('/api/sensores', async (req, res) => {
 });
 
 // Iniciar el servidor
-const PORT = 1500;
+const PORT = 8080;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
