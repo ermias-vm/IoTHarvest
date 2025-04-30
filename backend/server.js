@@ -25,6 +25,49 @@ mongoose.connect(USED_DB, {
   })
   .catch(err => console.error('Error al conectar:', err));
 
+//MULTER para imágenes
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+// Crear carpeta si no existe
+const imagesDir = path.join(__dirname, 'plantsImages');
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir);
+}
+
+// Configuración de multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, imagesDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const now = new Date().toISOString().replace(/:/g, '-');
+    cb(null, `${now}${ext}`);
+  }
+});
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg') {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten imágenes JPG'));
+    }
+  }
+});
+
+// Ruta para recibir imágenes JPG
+app.post('/api/upload-image', upload.single('imagen'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se recibió ninguna imagen JPG' });
+  }
+  res.json({ message: 'Imagen recibida y guardada', filename: req.file.filename });
+});
+
+
+
 // Esquema para los datos de sensores
 const sensorSchema = new mongoose.Schema({
   temperatura: { type: Number, required: true },
