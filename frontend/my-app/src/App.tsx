@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard';
-import LoginPage from './components/LoginPage';
-import SignInPage from './components/SignInPage'; // 👈 importa la nueva página
+import LogInPage from './components/LoginPage';
+import CreateAccountPage from './components/CreateAccountPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,7 +16,7 @@ function App() {
           element={
             isAuthenticated
               ? <Navigate to="/dashboard" />
-              : <LoginPage onLogin={() => setIsAuthenticated(true)} />
+              : <LogInPage onLogIn={() => setIsAuthenticated(true)} />
           }
         />
         <Route
@@ -28,12 +28,12 @@ function App() {
           }
         />
         <Route
-          path="/signin"
-          element={<SignInPage />} // 👈 nueva ruta accesible sin login
+          path="/create-account"
+          element={<CreateAccountPage />}
         />
         <Route
           path="/login"
-          element={<LoginPage onLogin={() => setIsAuthenticated(true)} />}
+          element={<LogInPage onLogIn={() => setIsAuthenticated(true)} />}
         />
       </Routes>
     </Router>

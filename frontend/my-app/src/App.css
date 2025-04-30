@@ -11,7 +11,6 @@ body, html {
   align-items: center;
 }
 
-/* Contenedor de fondo */
 .background-container {
   background-color: #cce6cc;
   height: calc(100vh - 4vh);
@@ -24,7 +23,6 @@ body, html {
   position: relative;
 }
 
-/* Título */
 .title {
   font-size: 3rem;
   font-weight: bold;
@@ -35,7 +33,6 @@ body, html {
   color: #000;
 }
 
-/* Contenedor horizontal de gráficos y foto */
 .top-panels {
   display: flex;
   flex-direction: row;
@@ -43,12 +40,11 @@ body, html {
   gap: 2vw;
   justify-content: space-between;
   width: 100%;
-  height: 89%; /* 🔧 Ajusta aquí la altura */
+  height: 89%;
   margin-top: 10vh;
   box-sizing: border-box;
 }
 
-/* Panel gráfico */
 .graphs-container {
   flex: 1;
   background-color: #7ca982;
@@ -60,7 +56,6 @@ body, html {
   flex-direction: column;
 }
 
-/* Panel foto */
 .photo-container {
   flex: 1;
   background-color: #7ca982;
@@ -70,11 +65,10 @@ body, html {
   box-sizing: border-box;
 }
 
-/* Grid sensores 2x2 */
 .sensors-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columnas de igual tamaño */
-  grid-template-rows: repeat(2, 1fr); /* 2 filas de igual tamaño */
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   width: 95%;
   height: 100%;
   margin-left: 2vw;
@@ -82,10 +76,9 @@ body, html {
   box-sizing: border-box;
 }
 
-/* Caja sensor */
 .sensor-container {
-  width: calc(100% - 2vw); /* Ocupa la mitad del ancho del contenedor padre menos el gap */
-  height: calc(100% - 2vh); /* Ocupa la mitad de la altura del contenedor padre menos el gap */
+  width: calc(100% - 2vw);
+  height: calc(100% - 2vh);
   background-color: #f1f7ed;
   border-radius: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -97,7 +90,6 @@ body, html {
   align-items: center;
 }
 
-/* Título del sensor */
 .sensor-title {
   font-size: 1rem;
   font-weight: bold;
@@ -109,7 +101,6 @@ body, html {
   margin-bottom: 1vh;
 }
 
-/* Datos del sensor */
 .sensor-data {
   font-size: 1rem;
   color: #000;
@@ -141,7 +132,6 @@ body, html {
   align-items: center;
 }
 
-/* Alturas ajustables */
 .photo-box-top {
   flex: 8;
 }

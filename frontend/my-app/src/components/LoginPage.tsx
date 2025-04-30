@@ -2,23 +2,23 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
-  onLogin: () => void;
+  onLogIn: () => void;
 };
 
-const LoginPage: React.FC<Props> = ({ onLogin }) => {
+const LogInPage: React.FC<Props> = ({ onLogIn }) => {
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    onLogin();
-    navigate('/dashboard'); // Redirige al Dashboard después de iniciar sesión
+  const handleLogIn = () => {
+    onLogIn();
+    navigate('/dashboard');
   };
 
   return (
     <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div
         style={{ 
-          height: '40%', 
-          width: '100%', 
+          height: '280px',
+          width: '180px',
           padding: '2rem', 
           background: '#f1f7ed', 
           borderRadius: '20px', 
@@ -26,9 +26,8 @@ const LoginPage: React.FC<Props> = ({ onLogin }) => {
           display: 'flex', 
           flexDirection: 'column', 
           justifyContent: 'flex-start', 
-          alignItems: 'center', 
-          margin: 'auto' 
-        }}
+          alignItems: 'center' 
+       }}
       >
         <h2 style={{ 
           color: 'black', 
@@ -62,7 +61,7 @@ const LoginPage: React.FC<Props> = ({ onLogin }) => {
           }}
         />
         <button 
-          onClick={handleLogin} 
+          onClick={handleLogIn} 
           style={{ 
             width: '80%', 
             padding: '0.5rem', 
@@ -75,7 +74,7 @@ const LoginPage: React.FC<Props> = ({ onLogin }) => {
           }}
         >Log In</button>
         <button 
-          onClick={() => navigate('/signin')} 
+          onClick={() => navigate('/create-account')} 
           style={{ 
             width: '80%', 
             padding: '0.5rem', 
@@ -85,10 +84,10 @@ const LoginPage: React.FC<Props> = ({ onLogin }) => {
             border: 'none', 
             cursor: 'pointer' 
           }}
-        >Sign In</button>
+        >Create Account</button>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default LogInPage;
