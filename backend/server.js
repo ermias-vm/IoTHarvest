@@ -77,7 +77,25 @@ const sensorSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 }, { collection: 'sensorsData' });
 
-const Sensor = mongoose.model('Sensor', sensorSchema);
+const sensorSchemaOptimized = new mongoose.Schema(
+  {
+    temperatura: { type: Number, required: true },
+    humedad_aire: { type: Number, required: true },
+    humedad_suelo: { type: Number, required: true },
+    bateria: { type: Number, required: true },
+    timestamp: { type: Date, default: Date.now }
+  },
+  {
+    timeseries: {
+      tiemField: 'timestamp',
+      metaField: null,
+      granularity: 'minutes'
+    },
+    collection: 'sensorDataOptimized'
+  }
+);
+
+const Sensor = mongoose.model('Sensor', sensorSchemaOptimized);
 let cacheUltimosDatos = null;
 
 function actualizarCache(datos) {
