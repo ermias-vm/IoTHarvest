@@ -14,7 +14,7 @@ sudo apt install -y nodejs npm
 Desde la carpeta raíz del proyecto, accede al directorio `backend` e instala las dependencias necesarias:
 ```sh
 cd backend
-npm install express mongoose dotenv
+npm install express mongoose dotenv multer
 ```
 
 ### 🔹 Configuración de MongoDB
@@ -68,7 +68,7 @@ Para enviar datos de prueba al servidor y almacenarlos, ejecuta el script de env
 - **Método:** GET  
 - **Descripción:** Devuelve el último conjunto de datos recibido y almacenado en caché.
 ```sh
-curl -X GET http://localhost:1500/api/sensores/ultimo
+curl -X GET http://localhost:8080/api/sensores/ultimo
 ```
 
 ### Últimos X Datos
@@ -76,7 +76,7 @@ curl -X GET http://localhost:1500/api/sensores/ultimo
 - **Método:** GET  
 - **Descripción:** Devuelve los últimos X registros almacenados en la base de datos.
 ```sh
-curl -X GET http://localhost:1500/api/sensores/ultimos/5
+curl -X GET http://localhost:8080/api/sensores/ultimos/5
 ```
 
 ### Todos los Datos Almacenados
@@ -84,7 +84,7 @@ curl -X GET http://localhost:1500/api/sensores/ultimos/5
 - **Método:** GET  
 - **Descripción:** Devuelve todos los datos almacenados en la base de datos.
 ```sh
-curl -X GET http://localhost:1500/api/sensores
+curl -X GET http://localhost:8080/api/sensores
 ```
 
 ✅ ¡El servidor ya está listo para funcionar! 🎯

@@ -17,7 +17,7 @@ const CLUSTER = process.env.MONGODB_URL;
 const USED_DB = CLUSTER;  // Usar LOCAL o CLUSTER
 
 mongoose.connect(USED_DB, {
-  dbName: 'iotharvest' // Especificar base de datos aquí
+  dbName: 'iotharvest' // Nombre de la base de datos
 })
   .then(() => {
     const dbType = USED_DB.includes('localhost') ? `${GREEN}Local${RESET}` : `${CYAN}Cluster${RESET}`;
@@ -31,9 +31,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Crear carpeta si no existe
-const imagesDir = path.join(__dirname, 'plantsImages');
+const imagesDir = path.join(__dirname, '../tests/outgoingImages');
 if (!fs.existsSync(imagesDir)) {
-  fs.mkdirSync(imagesDir);
+  fs.mkdirSync(imagesDir, { recursive: true });
 }
 
 // Configuración de multer
@@ -42,8 +42,9 @@ const storage = multer.diskStorage({
     cb(null, imagesDir);
   },
   filename: function (req, file, cb) {
+    // Obtener la fecha en hora española y formatearla para el nombre de archivo
+    const now = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Madrid' }).replace(/[\s:]/g, '-').replace(',', '');
     const ext = path.extname(file.originalname);
-    const now = new Date().toISOString().replace(/:/g, '-');
     cb(null, `${now}${ext}`);
   }
 });
@@ -74,7 +75,7 @@ const sensorSchema = new mongoose.Schema({
   humedad_aire: { type: Number, required: true },
   humedad_suelo: { type: Number, required: true },
   bateria: { type: Number, required: true },
-  timestamp: { type: Date, default: Date.now }
+  timeServer: { type: Date, default: Date.now }
 }, { collection: 'sensorsData' });
 
 const Sensor = mongoose.model('Sensor', sensorSchema);
@@ -88,7 +89,7 @@ function actualizarCache(datos) {
 app.post('/api/sensores', async (req, res) => {
   const { temperatura, humedad_aire, humedad_suelo, bateria } = req.body;
   try {
-    const datos = { temperatura, humedad_aire, humedad_suelo, bateria, timestamp: new Date() };
+    const datos = { temperatura, humedad_aire, humedad_suelo, bateria, timeServer: new Date() };
 
     // Actualizar la caché antes de guardar en la base de datos
     actualizarCache(datos);
@@ -103,10 +104,19 @@ app.post('/api/sensores', async (req, res) => {
   }
 });
 
+// Conversión de fecha a hora local de España (Europe/Madrid)
+function toHoraEspañola(date) {
+  return new Date(date).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+}
+
 // Ruta para ver los ultimos datos
 app.get('/api/sensores/ultimo', (req, res) => {
   if (cacheUltimosDatos) {
-    res.json(cacheUltimosDatos);
+    const datosConvertidos = {
+      ...cacheUltimosDatos,
+      timeServer: toHoraEspañola(cacheUltimosDatos.timeServer)
+    };
+    res.json(datosConvertidos);
   } else {
     res.status(404).json({ error: 'No hay datos en caché' });
   }
@@ -121,10 +131,12 @@ app.get('/api/sensores/ultimos/:cantidad', async (req, res) => {
   }
 
   try {
-    // Obtener los últimos X datos desde la base de datos
-    const datos = await Sensor.find().sort({ timestamp: -1 }).limit(cantidad); // Últimos X registros
-
-    res.json(datos);
+    const datos = await Sensor.find().sort({ timeServer: -1 }).limit(cantidad);
+    const datosConvertidos = datos.map(d => ({
+      ...d.toObject(),
+      timeServer: toHoraEspañola(d.timeServer)
+    }));
+    res.json(datosConvertidos);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener datos', detalles: error });
   }
@@ -133,8 +145,12 @@ app.get('/api/sensores/ultimos/:cantidad', async (req, res) => {
 // Ruta para ver todos los datos (GET)
 app.get('/api/sensores', async (req, res) => {
   try {
-    const datos = await Sensor.find(); // Obtener todos los datos de MongoDB
-    res.json(datos);
+    const datos = await Sensor.find();
+    const datosConvertidos = datos.map(d => ({
+      ...d.toObject(),
+      timeServer: toHoraEspañola(d.timeServer)
+    }));
+    res.json(datosConvertidos);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener datos', detalles: error });
   }
