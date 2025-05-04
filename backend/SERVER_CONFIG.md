@@ -14,7 +14,7 @@ sudo apt install -y nodejs npm
 Desde la carpeta raíz del proyecto, accede al directorio `backend` e instala las dependencias necesarias:
 ```sh
 cd backend
-npm install express mongoose dotenv multer
+npm install express mongoose dotenv multer bcrypt jsonwebtoken
 ```
 
 ### 🔹 Configuración de MongoDB

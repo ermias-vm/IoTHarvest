@@ -6,6 +6,8 @@ const app = express();
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 // Middleware para recibir datos en formato JSON
 app.use(express.json());
 
@@ -17,9 +19,11 @@ const RESET = "\x1b[0m";
 require('dotenv').config();
 const LOCAL= 'mongodb://localhost/iotharvest';
 const CLUSTER = process.env.MONGODB_URL;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const USED_DB = CLUSTER;  // Usar LOCAL o CLUSTER
 
+// Conexión a MongoDB
 mongoose.connect(USED_DB, {
   dbName: 'iotharvest' // Nombre de la base de datos
 })
@@ -30,6 +34,45 @@ mongoose.connect(USED_DB, {
   .catch(err => console.error('Error al conectar:', err));
 
 
+                            ////  AUTENTIFICACION /////
+
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true }
+}, { collection: 'users' });
+
+const User = mongoose.model('User', userSchema);
+
+
+// Registro de usuario
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ username, password: hashedPassword });
+    await user.save();
+    res.json({ message: 'Usuario creado correctamente' });
+  } catch (err) {
+    res.status(400).json({ error: 'Error al crear usuario', detalles: err });
+  }
+});
+
+// Login de usuario
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+
+    const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1d' });
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ error: 'Error en login', detalles: err });
+  }
+});
 
 
                             ////  DATOS IMAGENES /////
