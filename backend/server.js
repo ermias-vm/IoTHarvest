@@ -106,6 +106,15 @@ app.post('/api/images', cacheUpload.single('imagen'), (req, res) => {
     path: req.file.path,
     uploadDate: new Date()
   });
+
+  // Copiar la imagen a outgoingImages (simula subida a S3 AWS)
+  const outgoingPath = path.join(imagesDir, req.file.filename);
+  fs.copyFile(req.file.path, outgoingPath, (err) => {
+    if (err) {
+      console.error('Error al copiar imagen a outgoingImages:', err);
+    }
+  });
+
   // Limitar tamaño de la caché y borrar archivos antiguos
   while (imagesCache.length > IMAGES_CACHE_SIZE) {
     const removed = imagesCache.shift();
