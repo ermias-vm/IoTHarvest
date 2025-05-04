@@ -3,4 +3,6 @@ node_modules/
 .env
 
 dataset/
-
+outgoingImages/
+imageCache/
+sensorCache/

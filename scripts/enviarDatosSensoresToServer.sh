@@ -1,4 +1,9 @@
 #!/bin/bash
+# Uso:
+#   ./enviarDatosSensoresToServer.sh [NUM_ENVIOS] [INTERVALO]
+# - NUM_ENVIOS: número total de envíos a realizar (por defecto 10, máximo 300)
+# - INTERVALO: segundos entre cada envío (por defecto 1, máximo 60)
+# Ejemplo: ./enviarDatosSensoresToServer.sh 20 5
 
 # Configuración por defecto
 NUM_ENVIOS=10  # Número de envíos por defecto

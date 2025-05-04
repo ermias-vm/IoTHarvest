@@ -2,6 +2,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 
+//MULTER para imágenes
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 // Middleware para recibir datos en formato JSON
 app.use(express.json());
 
@@ -25,16 +29,26 @@ mongoose.connect(USED_DB, {
   })
   .catch(err => console.error('Error al conectar:', err));
 
-//MULTER para imágenes
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
 
-// Crear carpeta si no existe
+
+
+                            ////  DATOS IMAGENES /////
+
+// Crear carpeta test imagenes si no existe
 const imagesDir = path.join(__dirname, '../tests/outgoingImages');
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir, { recursive: true });
 }
+
+// Crear carpeta de caché si no existe
+const imageCacheDir = path.join(__dirname, 'imageCache');
+if (!fs.existsSync(imageCacheDir)) {
+  fs.mkdirSync(imageCacheDir, { recursive: true });
+}
+
+// Parámetros de la caché
+const IMAGES_CACHE_SIZE = 14; // 2 semanas (1 imagen diaria)
+let imagesCache = [];
 
 // Configuración de multer
 const storage = multer.diskStorage({
@@ -59,15 +73,53 @@ const upload = multer({
   }
 });
 
+// Configuración de multer para guardar en la caché
+const cacheStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, imageCacheDir);
+  },
+  filename: function (req, file, cb) {
+    const now = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Madrid' }).replace(/[\s:]/g, '-').replace(',', '');
+    const ext = path.extname(file.originalname);
+    cb(null, `${now}${ext}`);
+  }
+});
+const cacheUpload = multer({
+  storage: cacheStorage,
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg') {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten imágenes JPG'));
+    }
+  }
+});
+
 // Ruta para recibir imágenes JPG
-app.post('/api/upload-image', upload.single('imagen'), (req, res) => {
+app.post('/api/images', cacheUpload.single('imagen'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No se recibió ninguna imagen JPG' });
   }
-  res.json({ message: 'Imagen recibida y guardada', filename: req.file.filename });
+  // Añadir a la caché en memoria
+  imagesCache.push({
+    filename: req.file.filename,
+    path: req.file.path,
+    uploadDate: new Date()
+  });
+  // Limitar tamaño de la caché y borrar archivos antiguos
+  while (imagesCache.length > IMAGES_CACHE_SIZE) {
+    const removed = imagesCache.shift();
+    // Eliminar archivo antiguo del disco
+    fs.unlink(removed.path, err => {
+      if (err) console.error('Error al borrar imagen de la caché:', err);
+    });
+  }
+  res.json({ message: 'Imagen recibida, guardada y cacheada', filename: req.file.filename });
 });
 
 
+
+                            ////  DATOS SENSORES /////
 
 // Esquema para los datos de sensores
 const sensorSchema = new mongoose.Schema({
@@ -108,6 +160,11 @@ app.post('/api/sensores', async (req, res) => {
 function toHoraEspañola(date) {
   return new Date(date).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 }
+
+
+
+
+                            ////  ENDPOINTS  /////
 
 // Ruta para ver los ultimos datos
 app.get('/api/sensores/ultimo', (req, res) => {
@@ -155,6 +212,12 @@ app.get('/api/sensores', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener datos', detalles: error });
   }
 });
+
+// Endpoint consultar la cache de imágenes (solo metadatos) 
+app.get('/api/images/cache', (req, res) => {
+  res.json(imagesCache);
+});
+
 
 // Iniciar el servidor
 const PORT = 8080;
