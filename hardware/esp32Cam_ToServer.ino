@@ -3,8 +3,8 @@
 #include <HTTPClient.h>
 
 // Configura tus credenciales WiFi
-const char* ssid = "MOVISTAR_A988";
-const char* password = "Croquetadejam0n";
+const char* ssid = "xxx";
+const char* password = "xxx";
 
 // Dirección IP del servidor y puerto
 const char* serverUrl = "http://nattech.fib.upc.edu:40480/api/images";
