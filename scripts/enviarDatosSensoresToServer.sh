@@ -1,13 +1,16 @@
 #!/bin/bash
+# filepath: scripts/enviarDatosSensoresToServer.sh
 # Uso:
-#   ./enviarDatosSensoresToServer.sh [NUM_ENVIOS] [INTERVALO]
+#   ./enviarDatosSensoresToServer.sh [NUM_ENVIOS] [INTERVALO] [STATUS]
 # - NUM_ENVIOS: número total de envíos a realizar (por defecto 10, máximo 300)
 # - INTERVALO: segundos entre cada envío (por defecto 1, máximo 60)
-# Ejemplo: ./enviarDatosSensoresToServer.sh 20 5
+# - STATUS: valor del campo status a enviar (por defecto 0)
+# Ejemplo: ./enviarDatosSensoresToServer.sh 20 5 3
 
 # Configuración por defecto
-NUM_ENVIOS=10  # Número de envíos por defecto
-INTERVALO=1    # Intervalo entre envíos en segundos
+NUM_ENVIOS=10
+INTERVALO=1
+STATUS=0
 SERVER_URL="http://localhost:8080/api/sensores"
 
 # Verificar argumentos
@@ -27,9 +30,9 @@ if [[ $# -ge 2 ]]; then
     fi
 fi
 
-# Inicialización de la batería
-BATERIA=100
-ENVIOS_DESDE_ULTIMA_BAJA=0
+if [[ $# -ge 3 ]]; then
+    STATUS=$3
+fi
 
 # Envío de datos
 for ((i=1; i<=NUM_ENVIOS; i++)); do
@@ -41,25 +44,17 @@ for ((i=1; i<=NUM_ENVIOS; i++)); do
         --arg temp "$TEMPERATURA" \
         --arg h_aire "$HUMEDAD_AIRE" \
         --arg h_suelo "$HUMEDAD_SUELO" \
-        --arg bat "$BATERIA" \
+        --arg status "$STATUS" \
         '{
             temperatura: ($temp | tonumber),
             humedad_aire: ($h_aire | tonumber),
             humedad_suelo: ($h_suelo | tonumber),
-            bateria: ($bat | tonumber)
+            status: ($status | tonumber)
         }')
 
     echo "Enviando datos: $JSON_PAYLOAD"
     curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" $SERVER_URL
 
-    # Reducir batería cada 3 envíos
-    ((ENVIOS_DESDE_ULTIMA_BAJA++))
-    if [[ $ENVIOS_DESDE_ULTIMA_BAJA -eq 3 ]]; then
-        BATERIA=$((BATERIA - 1))
-        ENVIOS_DESDE_ULTIMA_BAJA=0
-    fi
-
-    # Esperar antes del próximo envío
     sleep $INTERVALO
 done
 

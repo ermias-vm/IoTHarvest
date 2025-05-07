@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 // Middleware para recibir datos en formato JSON
 app.use(express.json());
 
@@ -22,6 +23,7 @@ const CLUSTER = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const USED_DB = CLUSTER;  // Usar LOCAL o CLUSTER
+const MAIL_SUBJECT = "Alerta IoT Harvest - Estado del Cultivo";
 
 // Conexión a MongoDB
 mongoose.connect(USED_DB, {
@@ -178,7 +180,7 @@ const sensorSchema = new mongoose.Schema({
   temperatura: { type: Number, required: true },
   humedad_aire: { type: Number, required: true },
   humedad_suelo: { type: Number, required: true },
-  bateria: { type: Number, required: true },
+  status: { type: Number, required: true },
   timeServer: { type: Date, default: Date.now }
 }, { collection: 'sensorsData' });
 
@@ -191,30 +193,67 @@ function actualizarCache(datos) {
 
 // Ruta para recibir datos (POST)
 app.post('/api/sensores', async (req, res) => {
-  const { temperatura, humedad_aire, humedad_suelo, bateria } = req.body;
+  const { temperatura, humedad_aire, humedad_suelo, bateria, status } = req.body;
   try {
-    const datos = { temperatura, humedad_aire, humedad_suelo, bateria, timeServer: new Date() };
+    const datos = { temperatura, humedad_aire, humedad_suelo, bateria, status, timeServer: new Date() };
 
-    // Actualizar la caché antes de guardar en la base de datos
     actualizarCache(datos);
 
-    // Guardar en MongoDB
     const sensor = new Sensor(datos);
     await sensor.save();
 
+    // Enviar mail solo si status es distinto  0, 0 = OK
+    if (status !== 0) {
+      console.log(`[MAIL] Intentando enviar mail para status ${status} a ${process.env.MAIL_FROM}...`);
+      await enviarMail(process.env.MAIL_FROM, status);
+    }
+
     res.json({ message: 'Datos recibidos y guardados', datos });
   } catch (error) {
+    console.error('[ERROR] Error en /api/sensores:', error);
     res.status(500).json({ error: 'Error al guardar datos', detalles: error });
   }
 });
+
+
+
+async function enviarMail(destinatario, status) {
+  const mailPath = path.join(__dirname, 'mail', `${status}.txt`);
+  let cuerpo;
+  try {
+    cuerpo = fs.readFileSync(mailPath, 'utf8');
+  } catch (err) {
+    console.error(`[MAIL] No se pudo leer el mensaje para status ${status}:`, err);
+    return;
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: process.env.MAIL_PORT,
+    secure: false,
+    auth: {
+      user: process.env.MAIL_FROM,
+      pass: process.env.MAIL_PASS
+    }
+  });
+
+  try {
+    let info = await transporter.sendMail({
+      from: process.env.MAIL_FROM,
+      to: destinatario,
+      subject: MAIL_SUBJECT,
+      text: cuerpo
+    });
+    console.log(`[MAIL] Correo enviado correctamente a ${destinatario}. MessageId: ${info.messageId}`);
+  } catch (err) {
+    console.error(`[MAIL] Error al enviar correo a ${destinatario}:`, err);
+  }
+}
 
 // Conversión de fecha a hora local de España (Europe/Madrid)
 function toHoraEspañola(date) {
   return new Date(date).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 }
-
-
-
 
                             ////  ENDPOINTS  /////
 
