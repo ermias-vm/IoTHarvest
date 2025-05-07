@@ -34,7 +34,7 @@ const CreateAccountPage: React.FC = () => {
     <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div
         style={{
-          height: '320px',
+          height: '340px',
           width: '220px',
           padding: '2rem',
           background: '#f1f7ed',
@@ -97,8 +97,6 @@ const CreateAccountPage: React.FC = () => {
               cursor: 'pointer'
             }}
           >Create account</button>
-          {error && <div style={{ color: 'red', marginBottom: '0.5rem' }}>{error}</div>}
-          {success && <div style={{ color: 'green', marginBottom: '0.5rem' }}>{success}</div>}
         </form>
         <button
           onClick={() => navigate('/login')}
@@ -112,6 +110,19 @@ const CreateAccountPage: React.FC = () => {
             cursor: 'pointer'
           }}
         >Back</button>
+        {(error || success) && (
+          <div style={{
+            marginTop: '1rem',
+            width: '73%',
+            textAlign: 'center',
+            fontSize: '0.9rem',
+            padding: '0.5rem',
+            borderRadius: '5px',
+            color: error ? 'red' : 'green'
+          }}>
+            {error || success}
+          </div>
+        )}
       </div>
     </div>
   );

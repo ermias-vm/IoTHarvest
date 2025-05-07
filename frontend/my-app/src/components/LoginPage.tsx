@@ -115,8 +115,7 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
         >Create Account</button>
           {error && (
             <div style={{
-              color: 'white',
-              backgroundColor: 'red',
+              color: 'red',
               padding: '0.5rem',
               borderRadius: '5px',
               marginTop: '1rem',

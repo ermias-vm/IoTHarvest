@@ -13,6 +13,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 // Middleware para recibir datos en formato JSON
 app.use(express.json());
+app.use('/imageCache', express.static(path.join(__dirname, 'imageCache')));
 
 // Colores ANSI
 const GREEN = "\x1b[32m";

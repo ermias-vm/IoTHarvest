@@ -33,6 +33,8 @@ const Dashboard = () => {
   } | null>(null);
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [latestImageUrl, setLatestImageUrl] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -56,10 +58,9 @@ const Dashboard = () => {
       }
     };
   
-    fetchSensorData(); // Llamada inicial
-    const interval = setInterval(fetchSensorData, SENSOR_FETCH_INTERVAL); // Actualización periódica
-  
-    return () => clearInterval(interval); // Limpieza al desmontar
+    fetchSensorData();
+    const interval = setInterval(fetchSensorData, SENSOR_FETCH_INTERVAL);
+    return () => clearInterval(interval);
   }, []);
   
   useEffect(() => {
@@ -76,6 +77,23 @@ const Dashboard = () => {
     };
   
     fetchWeather();
+  }, []);
+
+  useEffect(() => {
+    const fetchLatestImage = async () => {
+      try {
+        const res = await fetch('http://localhost:8080/api/images/cache');
+        const images = await res.json();
+        if (Array.isArray(images) && images.length > 0) {
+          const lastImage = images[images.length - 1]; // Última imagen agregada
+          setLatestImageUrl(`http://localhost:8080/imageCache/${lastImage.filename}`);
+        }
+      } catch (error) {
+        console.error("Error fetching latest image:", error);
+      }
+    };
+
+    fetchLatestImage();
   }, []);
 
   return (
@@ -124,7 +142,13 @@ const Dashboard = () => {
 
         <div className="photo-container">
           <div className="photo-inner-container">
-            <div className="photo-box-top" />
+            <div className="photo-box-top">
+              {latestImageUrl ? (
+                <img src={latestImageUrl} alt="Latest Capture" style={{ width: '75%', height: '75%', objectFit: 'cover', borderRadius: '8px' }} />
+              ) : (
+                <p style={{ textAlign: 'center' }}>Loading image...</p>
+              )}
+            </div>
             <div className="photo-box-bottom">
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '0.5rem', color: '#000' }}>
                 {weather && (
