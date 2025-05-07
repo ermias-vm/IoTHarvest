@@ -218,12 +218,13 @@ app.post('/api/sensores', async (req, res) => {
 });
 
 
-
 async function enviarMail(destinatario, status) {
   const mailPath = path.join(__dirname, 'mail', `${status}.txt`);
-  let cuerpo;
+  const footerImagePath = path.join(__dirname, 'mail', 'pie_correo.png');
+  let cuerpoTexto;
+
   try {
-    cuerpo = fs.readFileSync(mailPath, 'utf8');
+    cuerpoTexto = fs.readFileSync(mailPath, 'utf8');
   } catch (err) {
     console.error(`[MAIL] No se pudo leer el mensaje para status ${status}:`, err);
     return;
@@ -239,18 +240,35 @@ async function enviarMail(destinatario, status) {
     }
   });
 
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; font-size: 14px;">
+      <p>${cuerpoTexto.replace(/\n/g, '<br>')}</p>
+      <br>
+      <img src="cid:piecorreo" style="max-width: 100%; height: auto;" alt="pie_correo">
+    </div>
+  `;
+
   try {
     let info = await transporter.sendMail({
       from: process.env.MAIL_FROM,
       to: destinatario,
       subject: MAIL_SUBJECT,
-      text: cuerpo
+      text: cuerpoTexto,  // fallback para clientes sin soporte HTML
+      html: htmlBody,
+      attachments: [{
+        filename: 'pie_correo.png',
+        path: footerImagePath,
+        cid: 'piecorreo'
+      }]
     });
+
     console.log(`[MAIL] Correo enviado correctamente a ${destinatario}. MessageId: ${info.messageId}`);
   } catch (err) {
     console.error(`[MAIL] Error al enviar correo a ${destinatario}:`, err);
   }
 }
+
+
 
 // Conversión de fecha a hora local de España (Europe/Madrid)
 function toHoraEspañola(date) {
