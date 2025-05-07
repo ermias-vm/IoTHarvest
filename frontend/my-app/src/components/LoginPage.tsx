@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -7,10 +7,30 @@ type Props = {
 
 const LogInPage: React.FC<Props> = ({ onLogIn }) => {
   const navigate = useNavigate();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogIn = () => {
-    onLogIn();
-    navigate('/dashboard');
+  const handleLogIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await response.json();
+      if (response.ok && data.token) {
+        localStorage.setItem('token', data.token);
+        onLogIn(); // Cambia el estado de autenticación en App.tsx
+        navigate('/dashboard');
+      } else {
+        setError(data.error || 'Login incorrecto');
+      }
+    } catch (err) {
+      setError('Error de red o servidor');
+    }
   };
 
   return (
@@ -34,45 +54,54 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
           textAlign: 'center', 
           marginBottom: '1rem' 
         }}>Log In</h2>
-        <input 
-          type="text" 
-          placeholder="User" 
-          style={{ 
-            width: '80%', 
-            padding: '0.5rem', 
-            marginBottom: '1rem', 
-            borderRadius: '5px', 
-            border: '1px solid #7ca982',
-            background: 'none',
-            color: 'black' 
-          }}
-        />
-        <input 
-          type="password" 
-          placeholder="Password" 
-          style={{ 
-            width: '80%', 
-            padding: '0.5rem', 
-            marginBottom: '1rem', 
-            borderRadius: '5px', 
-            border: '1px solid #7ca982',
-            background: 'none',
-            color: 'black' 
-          }}
-        />
-        <button 
-          onClick={handleLogIn} 
-          style={{ 
-            width: '80%', 
-            padding: '0.5rem', 
-            marginBottom: '1rem', 
-            borderRadius: '5px', 
-            background: '#7ca982', 
-            color: 'white', 
-            border: 'none', 
-            cursor: 'pointer' 
-          }}
-        >Log In</button>
+        <form onSubmit={handleLogIn} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <input 
+            type="email" 
+            placeholder="Correo (Gmail)" 
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            required
+            style={{ 
+              width: '80%', 
+              padding: '0.5rem', 
+              marginBottom: '1rem', 
+              borderRadius: '5px', 
+              border: '1px solid #7ca982',
+              background: 'none',
+              color: 'black' 
+            }}
+          />
+          <input 
+            type="password" 
+            placeholder="Contraseña" 
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            style={{ 
+              width: '80%', 
+              padding: '0.5rem', 
+              marginBottom: '1rem', 
+              borderRadius: '5px', 
+              border: '1px solid #7ca982',
+              background: 'none',
+              color: 'black' 
+            }}
+          />
+          <button 
+            type="submit"
+            style={{ 
+              width: '80%', 
+              padding: '0.5rem', 
+              marginBottom: '1rem', 
+              borderRadius: '5px', 
+              background: '#7ca982', 
+              color: 'white', 
+              border: 'none', 
+              cursor: 'pointer' 
+            }}
+          >Entrar</button>
+          {error && <div style={{ color: 'red' }}>{error}</div>}
+        </form>
         <button 
           onClick={() => navigate('/create-account')} 
           style={{ 
