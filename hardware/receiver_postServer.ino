@@ -15,8 +15,8 @@ WiFiClient  client;
 unsigned long canal = 1;
 
 // Definiciones de WiFi y la URL del servidor
-const char* ssid = "ASUS";          // nombre red Wi-Fi
-const char* password = "Croquetadejam0n";  // contraseña Wi-Fi
+const char* ssid = "xxx";          // nombre red Wi-Fi
+const char* password = "xxx";  // contraseña Wi-Fi
 const char* serverUrl = "http://nattech.fib.upc.edu:40480/api/sensores"; // URL endpoint servidor web
 
 unsigned long lastTime = 0;
