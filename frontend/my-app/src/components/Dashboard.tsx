@@ -1,3 +1,4 @@
+const SENSOR_FETCH_INTERVAL = 10000;
 import { useState, useEffect } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
@@ -39,7 +40,7 @@ const Dashboard = () => {
       try {
         const res = await fetch('http://localhost:8080/api/sensores/ultimo');
         const data = await res.json();
-
+  
         if (data.temperatura !== undefined) {
           setSensorData({
             temperatura: data.temperatura,
@@ -54,7 +55,14 @@ const Dashboard = () => {
         console.error('Error fetching sensor data:', error);
       }
     };
-
+  
+    fetchSensorData(); // Llamada inicial
+    const interval = setInterval(fetchSensorData, SENSOR_FETCH_INTERVAL); // Actualización periódica
+  
+    return () => clearInterval(interval); // Limpieza al desmontar
+  }, []);
+  
+  useEffect(() => {
     const fetchWeather = async () => {
       try {
         const res = await fetch(
@@ -66,8 +74,7 @@ const Dashboard = () => {
         console.error("Error fetching weather data:", error);
       }
     };
-
-    fetchSensorData();
+  
     fetchWeather();
   }, []);
 

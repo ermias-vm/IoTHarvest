@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const app = express();
+app.use(cors());
 
 //MULTER para imágenes
 const multer = require('multer');
@@ -15,10 +17,10 @@ app.use(express.json());
 // Colores ANSI
 const GREEN = "\x1b[32m";
 const CYAN = "\x1b[36m";
-const RESET = "\x1b[0m"; 
+const RESET = "\x1b[0m";
 
 require('dotenv').config();
-const LOCAL= 'mongodb://localhost/iotharvest';
+const LOCAL = 'mongodb://localhost/iotharvest';
 const CLUSTER = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -36,7 +38,7 @@ mongoose.connect(USED_DB, {
   .catch(err => console.error('Error al conectar:', err));
 
 
-                            ////  AUTENTIFICACION /////
+////  AUTENTIFICACION /////
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -77,7 +79,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 
-                            ////  DATOS IMAGENES /////
+////  DATOS IMAGENES /////
 
 // Crear carpeta test imagenes si no existe
 const imagesDir = path.join(__dirname, '../tests/outgoingImages');
@@ -173,7 +175,7 @@ app.post('/api/images', cacheUpload.single('imagen'), (req, res) => {
 
 
 
-                            ////  DATOS SENSORES /////
+////  DATOS SENSORES /////
 
 // Esquema para los datos de sensores
 const sensorSchema = new mongoose.Schema({
@@ -255,7 +257,7 @@ function toHoraEspañola(date) {
   return new Date(date).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 }
 
-                            ////  ENDPOINTS  /////
+////  ENDPOINTS  /////
 
 // Ruta para ver los ultimos datos
 app.get('/api/sensores/ultimo', (req, res) => {
