@@ -1,16 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 
+interface WeatherData {
+  time: string[];
+  temperature_2m_max: number[];
+  temperature_2m_min: number[];
+  weathercode: number[];
+}
+
+const weatherIcons: Record<number, string> = {
+  0: "☀️",
+  1: "🌤️",
+  2: "⛅",
+  3: "☁️",
+  45: "🌫️",
+  48: "🌫️",
+  51: "🌦️",
+  61: "🌧️",
+  71: "❄️",
+  80: "🌦️",
+  95: "⛈️",
+};
+
 const Dashboard = () => {
-  const [sensorData, setSensorData] = useState({
+  const [sensorData] = useState({
     temperature: 0,
     humidity: 0,
     batery: 0,
     timestamp: ''
   });
 
+  const [weather, setWeather] = useState<WeatherData | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch(
+          "https://api.open-meteo.com/v1/forecast?latitude=41.3874&longitude=2.1686&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Europe%2FMadrid"
+        );
+        const data = await res.json();
+        setWeather(data.daily);
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
+    };
+
+    fetchWeather();
+  }, []);
 
   return (
     <div className="background-container">
@@ -26,7 +64,7 @@ const Dashboard = () => {
           borderRadius: '5px' 
         }}
       >
-        User {/* // Aquí se mostraría el nombre del usuario obtenido del backend */}
+        User
       </div>
       <button 
         onClick={() => navigate('/login')} 
@@ -45,7 +83,6 @@ const Dashboard = () => {
 
       <div className="top-panels">
         <div className="graphs-container">
-
           <div className="sensors-grid">
             <div className="sensor-container">
               <div className="sensor-title">Air humidity</div>
@@ -71,8 +108,55 @@ const Dashboard = () => {
         <div className="photo-container">
           <div className="photo-inner-container">
             <div className="photo-box-top">
+              {/* Puedes dejar esto vacío o usarlo para otra visualización */}
             </div>
             <div className="photo-box-bottom">
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                padding: '0.5rem',
+                color: '#000'
+              }}>
+                {weather && (
+                  <div style={{
+                    background: 'transparent',
+                    borderRadius: '10px',
+                    padding: '0.75rem',
+                    display: 'flex',
+                    gap: '0.75rem',
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    width: '100%',
+                    color: '#000'
+                  }}>
+                    {weather.time.map((date, index) => {
+                      const d = new Date(date);
+                      const day = d.getDate().toString().padStart(2, '0');
+                      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+                      return (
+                        <div key={date} style={{
+                          textAlign: 'center',
+                          fontSize: '0.8rem',
+                          minWidth: '60px',
+                          flex: '1 1 60px',
+                          maxWidth: '80px',
+                          color: '#000'
+                        }}>
+                          <div>{`${day}/${month}`}</div>
+                          <div style={{ fontSize: '2.5rem' }}>
+                            {weatherIcons[weather.weathercode[index]] || "❓"}
+                          </div>
+                          <div>
+                            {Math.round(weather.temperature_2m_max[index])}º - {Math.round(weather.temperature_2m_min[index])}º
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
