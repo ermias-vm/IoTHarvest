@@ -55,9 +55,9 @@ app.post('/api/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword });
     await user.save();
-    res.json({ message: 'Usuario creado correctamente' });
+    res.json({ message: 'User Successfully created' });
   } catch (err) {
-    res.status(400).json({ error: 'Error al crear usuario', detalles: err });
+    res.status(400).json({ error: 'Error creating user', detalles: err });
   }
 });
 
@@ -66,15 +66,15 @@ app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+    if (!user) return res.status(401).json({ error: 'Incorrect email or password' });
 
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+    if (!valid) return res.status(401).json({ error: 'Incorrect email or password' });
 
     const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token });
   } catch (err) {
-    res.status(500).json({ error: 'Error en login', detalles: err });
+    res.status(500).json({ error: 'Log In Error', detalles: err });
   }
 });
 

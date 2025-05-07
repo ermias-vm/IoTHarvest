@@ -26,10 +26,10 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
         onLogIn(); // Cambia el estado de autenticación en App.tsx
         navigate('/dashboard');
       } else {
-        setError(data.error || 'Login incorrecto');
+        setError(data.error || 'Login failed');
       }
     } catch (err) {
-      setError('Error de red o servidor');
+      setError('Red or server error');
     }
   };
 
@@ -37,8 +37,8 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
     <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div
         style={{ 
-          height: '280px',
-          width: '180px',
+          height: '320px',
+          width: '220px',
           padding: '2rem', 
           background: '#f1f7ed', 
           borderRadius: '20px', 
@@ -57,7 +57,7 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
         <form onSubmit={handleLogIn} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <input 
             type="email" 
-            placeholder="Correo (Gmail)" 
+            placeholder="E-mail" 
             value={username}
             onChange={e => setUsername(e.target.value)}
             required
@@ -73,7 +73,7 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
           />
           <input 
             type="password" 
-            placeholder="Contraseña" 
+            placeholder="Password" 
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
@@ -100,7 +100,6 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
               cursor: 'pointer' 
             }}
           >Entrar</button>
-          {error && <div style={{ color: 'red' }}>{error}</div>}
         </form>
         <button 
           onClick={() => navigate('/create-account')} 
@@ -114,6 +113,20 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
             cursor: 'pointer' 
           }}
         >Create Account</button>
+          {error && (
+            <div style={{
+              color: '#b81414',
+              backgroundColor: '#ffe6e6',
+              padding: '0.5rem',
+              borderRadius: '5px',
+              marginTop: '1rem',
+              fontSize: '0.9rem',
+              textAlign: 'center',
+              width: '73%',
+            }}>
+              {error}
+            </div>
+          )}
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ const CreateAccountPage: React.FC = () => {
         <form onSubmit={handleCreateAccount} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <input
             type="email"
-            placeholder="Correo (Gmail)"
+            placeholder="E-mail"
             value={username}
             onChange={e => setUsername(e.target.value)}
             required
@@ -70,7 +70,7 @@ const CreateAccountPage: React.FC = () => {
           />
           <input
             type="password"
-            placeholder="Contraseña"
+            placeholder="Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
