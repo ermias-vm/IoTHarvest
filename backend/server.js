@@ -87,7 +87,7 @@ const sensorSchemaOptimized = new mongoose.Schema(
   },
   {
     timeseries: {
-      tiemField: 'timestamp',
+      timeField: 'timestamp',
       metaField: null,
       granularity: 'minutes'
     },
