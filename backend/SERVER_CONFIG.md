@@ -11,10 +11,20 @@ sudo apt install -y nodejs npm
 ```
 
 ### 🔹 Instalación de Dependencias
-Desde la carpeta raíz del proyecto, accede al directorio `backend` e instala las dependencias necesarias:
+
+#### Caso 1: Ya tienes package.json y package-lock.json
+Desde la carpeta raíz del proyecto, accede al directorio `backend` e instala las dependencias ya definidas:
 ```sh
 cd backend
-npm install express mongoose dotenv multer bcrypt jsonwebtoken
+npm install
+```
+
+#### Caso 2: No tienes package.json y necesitas instalar las dependencias desde cero
+Desde la carpeta raíz del proyecto, accede al directorio `backend`, inicializa el proyecto y luego instala las dependencias necesarias:
+```sh
+cd backend
+npm init -y
+npm install express mongoose dotenv multer bcrypt jsonwebtoken  
 ```
 
 ### 🔹 Configuración de MongoDB
