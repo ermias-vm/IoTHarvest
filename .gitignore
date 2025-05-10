@@ -6,3 +6,4 @@ dataset/
 outgoingImages/
 imageCache/
 sensorCache/
+cacheSensors.json
