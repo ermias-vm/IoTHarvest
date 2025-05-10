@@ -1,0 +1,9 @@
+[
+  {
+    "temperatura": 24,
+    "humedad_aire": 44,
+    "humedad_suelo": 50,
+    "status": 0,
+    "timeServer": "2025-05-10T11:50:35.693Z"
+  }
+]

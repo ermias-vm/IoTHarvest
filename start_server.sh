@@ -38,6 +38,7 @@ function stop_all() {
 
 function do_pull() {
   echo "Comprobando estado del repositorio..."
+  git fetch --all
   STATUS_OUTPUT=$(git status)
   if echo "$STATUS_OUTPUT" | grep -q "Your branch is up to date"; then
     echo "El repositorio ya está actualizado. No se realiza git pull ni se espera."

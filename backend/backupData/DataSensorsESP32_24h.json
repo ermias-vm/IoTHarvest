@@ -1,0 +1,1430 @@
+[{
+  "_id": {
+    "$oid": "681d9cbfa831e56c828c20c8"
+  },
+  "temperatura": 16.9,
+  "humedad_aire": 76,
+  "humedad_suelo": 3628,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T06:12:15.720Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681da605a831e56c828c20ca"
+  },
+  "temperatura": 18,
+  "humedad_aire": 75.9,
+  "humedad_suelo": 3451,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T06:51:49.333Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681db0d6a831e56c828c20d2"
+  },
+  "temperatura": 18,
+  "humedad_aire": 85,
+  "humedad_suelo": 3534,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T07:37:58.675Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dcea5fac689d0248770a8"
+  },
+  "temperatura": 23.6,
+  "humedad_aire": 64.4,
+  "humedad_suelo": 4095,
+  "status": 2,
+  "timeServer": {
+    "$date": "2025-05-09T09:45:09.713Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dcf5c5015ba7d4be1b340"
+  },
+  "temperatura": 24.3,
+  "humedad_aire": 58.2,
+  "humedad_suelo": 4095,
+  "status": 2,
+  "timeServer": {
+    "$date": "2025-05-09T09:48:12.551Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dcf8b5015ba7d4be1b342"
+  },
+  "temperatura": 24.3,
+  "humedad_aire": 59.4,
+  "humedad_suelo": 4095,
+  "status": 2,
+  "timeServer": {
+    "$date": "2025-05-09T09:48:59.482Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dd2615015ba7d4be1b344"
+  },
+  "temperatura": 22.5,
+  "humedad_aire": 61.5,
+  "humedad_suelo": 2347,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:01:05.849Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dd53557d257a92a254fba"
+  },
+  "temperatura": 23.7,
+  "humedad_aire": 59.1,
+  "humedad_suelo": 2355,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:13:09.830Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dd6af762db6973b3a9894"
+  },
+  "temperatura": 23.4,
+  "humedad_aire": 57.5,
+  "humedad_suelo": 2225,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:19:27.419Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dd87d762db6973b3a9896"
+  },
+  "temperatura": 23.4,
+  "humedad_aire": 62.8,
+  "humedad_suelo": 2414,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:27:09.093Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dda4a762db6973b3a9898"
+  },
+  "temperatura": 22.5,
+  "humedad_aire": 66.6,
+  "humedad_suelo": 2401,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:34:50.767Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681ddc18762db6973b3a989a"
+  },
+  "temperatura": 24.1,
+  "humedad_aire": 62.7,
+  "humedad_suelo": 2416,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:42:32.442Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681ddde6762db6973b3a989c"
+  },
+  "temperatura": 23.7,
+  "humedad_aire": 62.8,
+  "humedad_suelo": 2423,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:50:14.089Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681ddfb3762db6973b3a989e"
+  },
+  "temperatura": 22.7,
+  "humedad_aire": 65.3,
+  "humedad_suelo": 2419,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T10:57:55.756Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681de181762db6973b3a98a0"
+  },
+  "temperatura": 23.2,
+  "humedad_aire": 61.7,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:05:37.436Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681de350762db6973b3a98a2"
+  },
+  "temperatura": 23.8,
+  "humedad_aire": 60.1,
+  "humedad_suelo": 2421,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:13:20.481Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681de51c762db6973b3a98a4"
+  },
+  "temperatura": 24.2,
+  "humedad_aire": 61.1,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:21:00.760Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681de6ea762db6973b3a98a6"
+  },
+  "temperatura": 23.9,
+  "humedad_aire": 59.1,
+  "humedad_suelo": 2416,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:28:42.452Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681de8b8762db6973b3a98aa"
+  },
+  "temperatura": 23.7,
+  "humedad_aire": 60.4,
+  "humedad_suelo": 2447,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:36:24.097Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dea85762db6973b3a98ac"
+  },
+  "temperatura": 25.1,
+  "humedad_aire": 56.9,
+  "humedad_suelo": 2447,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:44:05.756Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dec53762db6973b3a98ae"
+  },
+  "temperatura": 24.8,
+  "humedad_aire": 57.3,
+  "humedad_suelo": 2437,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:51:47.433Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dee21762db6973b3a98b0"
+  },
+  "temperatura": 24.4,
+  "humedad_aire": 57.9,
+  "humedad_suelo": 2396,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T11:59:29.096Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681defee762db6973b3a98b2"
+  },
+  "temperatura": 31.9,
+  "humedad_aire": 42.3,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:07:10.792Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681df1bc762db6973b3a98b6"
+  },
+  "temperatura": 28.6,
+  "humedad_aire": 48.4,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:14:52.426Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681df38a762db6973b3a98b8"
+  },
+  "temperatura": 26.4,
+  "humedad_aire": 52.7,
+  "humedad_suelo": 2448,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:22:34.103Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681df557762db6973b3a98ba"
+  },
+  "temperatura": 26.7,
+  "humedad_aire": 53.3,
+  "humedad_suelo": 2443,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:30:15.779Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681df725762db6973b3a98be"
+  },
+  "temperatura": 26.8,
+  "humedad_aire": 53.7,
+  "humedad_suelo": 2432,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:37:57.435Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681df8f3762db6973b3a98c0"
+  },
+  "temperatura": 26.6,
+  "humedad_aire": 53.7,
+  "humedad_suelo": 2439,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:45:39.119Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dfac0762db6973b3a98c2"
+  },
+  "temperatura": 25.1,
+  "humedad_aire": 57.7,
+  "humedad_suelo": 2441,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T12:53:20.776Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dfc8e762db6973b3a98c4"
+  },
+  "temperatura": 25.2,
+  "humedad_aire": 57.8,
+  "humedad_suelo": 2425,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:01:02.447Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681dfe5c762db6973b3a98c6"
+  },
+  "temperatura": 24.6,
+  "humedad_aire": 61,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:08:44.109Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e0029762db6973b3a98c8"
+  },
+  "temperatura": 23.9,
+  "humedad_aire": 61,
+  "humedad_suelo": 2430,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:16:25.792Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e01f7762db6973b3a98ca"
+  },
+  "temperatura": 24,
+  "humedad_aire": 61.6,
+  "humedad_suelo": 2434,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:24:07.450Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e03c5762db6973b3a98cc"
+  },
+  "temperatura": 23,
+  "humedad_aire": 63.6,
+  "humedad_suelo": 2432,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:31:49.179Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e0592762db6973b3a98ce"
+  },
+  "temperatura": 24.1,
+  "humedad_aire": 61.8,
+  "humedad_suelo": 2384,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:39:30.779Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e0760762db6973b3a98d0"
+  },
+  "temperatura": 23.8,
+  "humedad_aire": 60.4,
+  "humedad_suelo": 2141,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:47:12.473Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e092e762db6973b3a98d2"
+  },
+  "temperatura": 23.4,
+  "humedad_aire": 61.4,
+  "humedad_suelo": 2442,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T13:54:54.116Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e0afb762db6973b3a98d8"
+  },
+  "temperatura": 24.3,
+  "humedad_aire": 61,
+  "humedad_suelo": 2438,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:02:35.782Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e0cc9762db6973b3a98da"
+  },
+  "temperatura": 23.9,
+  "humedad_aire": 61.5,
+  "humedad_suelo": 2434,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:10:17.454Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e0e97762db6973b3a98dc"
+  },
+  "temperatura": 23.8,
+  "humedad_aire": 61.2,
+  "humedad_suelo": 2444,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:17:59.123Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1064762db6973b3a98de"
+  },
+  "temperatura": 23.2,
+  "humedad_aire": 62.9,
+  "humedad_suelo": 2424,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:25:40.790Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1232762db6973b3a98e0"
+  },
+  "temperatura": 23,
+  "humedad_aire": 62.6,
+  "humedad_suelo": 2453,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:33:22.473Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1400762db6973b3a98e2"
+  },
+  "temperatura": 22.8,
+  "humedad_aire": 63.9,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:41:04.126Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e15cd762db6973b3a98e4"
+  },
+  "temperatura": 23,
+  "humedad_aire": 64.3,
+  "humedad_suelo": 2436,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:48:45.789Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e179b762db6973b3a98e6"
+  },
+  "temperatura": 23,
+  "humedad_aire": 63.7,
+  "humedad_suelo": 2435,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T14:56:27.474Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1969762db6973b3a98e8"
+  },
+  "temperatura": 22.1,
+  "humedad_aire": 65.1,
+  "humedad_suelo": 2423,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:04:09.127Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1b36762db6973b3a98ea"
+  },
+  "temperatura": 22.9,
+  "humedad_aire": 64.8,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:11:50.800Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1d04762db6973b3a98ec"
+  },
+  "temperatura": 22.3,
+  "humedad_aire": 67.6,
+  "humedad_suelo": 2425,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:19:32.477Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e1ed2762db6973b3a98ee"
+  },
+  "temperatura": 22.1,
+  "humedad_aire": 68.1,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:27:14.132Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e209f762db6973b3a98f0"
+  },
+  "temperatura": 22.3,
+  "humedad_aire": 66.8,
+  "humedad_suelo": 2421,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:34:55.824Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e226d762db6973b3a98f2"
+  },
+  "temperatura": 22.4,
+  "humedad_aire": 66.3,
+  "humedad_suelo": 2447,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:42:37.471Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e243b762db6973b3a98f4"
+  },
+  "temperatura": 21.8,
+  "humedad_aire": 70,
+  "humedad_suelo": 2423,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:50:19.203Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e2608762db6973b3a98f6"
+  },
+  "temperatura": 21.7,
+  "humedad_aire": 69.7,
+  "humedad_suelo": 2429,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T15:58:00.855Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e27d6762db6973b3a98f8"
+  },
+  "temperatura": 20.9,
+  "humedad_aire": 72.2,
+  "humedad_suelo": 2432,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:05:42.474Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e29a4762db6973b3a98fa"
+  },
+  "temperatura": 21,
+  "humedad_aire": 73.6,
+  "humedad_suelo": 2425,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:13:24.158Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e2b71762db6973b3a98fc"
+  },
+  "temperatura": 20.5,
+  "humedad_aire": 75,
+  "humedad_suelo": 2431,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:21:05.824Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e2d3f762db6973b3a98fe"
+  },
+  "temperatura": 20.6,
+  "humedad_aire": 72.8,
+  "humedad_suelo": 2431,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:28:47.475Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e2f0d762db6973b3a9900"
+  },
+  "temperatura": 20.9,
+  "humedad_aire": 73.6,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:36:29.141Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e30da762db6973b3a9902"
+  },
+  "temperatura": 20.5,
+  "humedad_aire": 75,
+  "humedad_suelo": 2426,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:44:10.802Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e32a8762db6973b3a9904"
+  },
+  "temperatura": 20.5,
+  "humedad_aire": 74.8,
+  "humedad_suelo": 2423,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:51:52.470Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e3476762db6973b3a9906"
+  },
+  "temperatura": 20.4,
+  "humedad_aire": 75.4,
+  "humedad_suelo": 2434,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T16:59:34.146Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e3643762db6973b3a9908"
+  },
+  "temperatura": 20.1,
+  "humedad_aire": 76.8,
+  "humedad_suelo": 2427,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:07:15.807Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e3811762db6973b3a990a"
+  },
+  "temperatura": 20.3,
+  "humedad_aire": 76.6,
+  "humedad_suelo": 2434,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:14:57.480Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e39df762db6973b3a990c"
+  },
+  "temperatura": 21.2,
+  "humedad_aire": 74.3,
+  "humedad_suelo": 2421,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:22:39.160Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e3bac762db6973b3a990e"
+  },
+  "temperatura": 20.4,
+  "humedad_aire": 76.1,
+  "humedad_suelo": 2393,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:30:20.817Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e3d7a762db6973b3a9910"
+  },
+  "temperatura": 19.8,
+  "humedad_aire": 78.9,
+  "humedad_suelo": 2442,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:38:02.483Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e3f48762db6973b3a9912"
+  },
+  "temperatura": 20,
+  "humedad_aire": 79.1,
+  "humedad_suelo": 2435,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:45:44.142Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e4115762db6973b3a9914"
+  },
+  "temperatura": 19.6,
+  "humedad_aire": 80.2,
+  "humedad_suelo": 2430,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T17:53:25.828Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e42e3762db6973b3a9916"
+  },
+  "temperatura": 19.8,
+  "humedad_aire": 79.2,
+  "humedad_suelo": 2443,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:01:07.483Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e44b1762db6973b3a9918"
+  },
+  "temperatura": 19.2,
+  "humedad_aire": 80.1,
+  "humedad_suelo": 2479,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:08:49.291Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e484c762db6973b3a991c"
+  },
+  "temperatura": 19,
+  "humedad_aire": 80.8,
+  "humedad_suelo": 2461,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:24:12.495Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e4a1a762db6973b3a991e"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 82.4,
+  "humedad_suelo": 2384,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:31:54.166Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e4be7762db6973b3a9920"
+  },
+  "temperatura": 18.8,
+  "humedad_aire": 83.3,
+  "humedad_suelo": 2405,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:39:35.815Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e4db5762db6973b3a9922"
+  },
+  "temperatura": 18.7,
+  "humedad_aire": 83.5,
+  "humedad_suelo": 2432,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:47:17.478Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e4f83762db6973b3a9924"
+  },
+  "temperatura": 18.6,
+  "humedad_aire": 84,
+  "humedad_suelo": 2432,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T18:54:59.169Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e5150762db6973b3a9926"
+  },
+  "temperatura": 18.7,
+  "humedad_aire": 85.4,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:02:40.828Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e531e762db6973b3a9928"
+  },
+  "temperatura": 18.6,
+  "humedad_aire": 86.2,
+  "humedad_suelo": 2434,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:10:22.487Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e54ec762db6973b3a992a"
+  },
+  "temperatura": 18.4,
+  "humedad_aire": 85.3,
+  "humedad_suelo": 2430,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:18:04.146Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e56b9762db6973b3a992c"
+  },
+  "temperatura": 18.4,
+  "humedad_aire": 86.1,
+  "humedad_suelo": 2439,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:25:45.823Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e5887762db6973b3a992e"
+  },
+  "temperatura": 18.5,
+  "humedad_aire": 84.8,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:33:27.482Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e5a55762db6973b3a9930"
+  },
+  "temperatura": 18.8,
+  "humedad_aire": 84.9,
+  "humedad_suelo": 2429,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:41:09.163Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e5c22762db6973b3a9932"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.4,
+  "humedad_suelo": 2417,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:48:50.862Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e5df0762db6973b3a9936"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 85.8,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T19:56:32.490Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e5fbe762db6973b3a9938"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 85.6,
+  "humedad_suelo": 2442,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:04:14.153Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e618b762db6973b3a993a"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 85.9,
+  "humedad_suelo": 2454,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:11:55.851Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e6359762db6973b3a993c"
+  },
+  "temperatura": 19.1,
+  "humedad_aire": 86,
+  "humedad_suelo": 2438,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:19:37.490Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e6527762db6973b3a993e"
+  },
+  "temperatura": 19,
+  "humedad_aire": 85.3,
+  "humedad_suelo": 2447,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:27:19.165Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e66f4762db6973b3a9940"
+  },
+  "temperatura": 19.2,
+  "humedad_aire": 85.8,
+  "humedad_suelo": 2446,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:35:00.828Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e68c2762db6973b3a9942"
+  },
+  "temperatura": 19.2,
+  "humedad_aire": 85.2,
+  "humedad_suelo": 2438,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:42:42.508Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e6a90762db6973b3a9944"
+  },
+  "temperatura": 19.2,
+  "humedad_aire": 84.7,
+  "humedad_suelo": 2431,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:50:24.160Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e6c5d762db6973b3a9946"
+  },
+  "temperatura": 19.2,
+  "humedad_aire": 85,
+  "humedad_suelo": 2439,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T20:58:05.829Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e6e2b762db6973b3a9948"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.3,
+  "humedad_suelo": 2437,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:05:47.513Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e6ff9762db6973b3a994a"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.4,
+  "humedad_suelo": 2448,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:13:29.163Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e71c6762db6973b3a994c"
+  },
+  "temperatura": 18.6,
+  "humedad_aire": 87.7,
+  "humedad_suelo": 2439,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:21:10.828Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e7394762db6973b3a994e"
+  },
+  "temperatura": 18.5,
+  "humedad_aire": 87.6,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:28:52.505Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e7562762db6973b3a9950"
+  },
+  "temperatura": 18.4,
+  "humedad_aire": 89.1,
+  "humedad_suelo": 2417,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:36:34.165Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e772f762db6973b3a9952"
+  },
+  "temperatura": 18.3,
+  "humedad_aire": 89.4,
+  "humedad_suelo": 2447,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:44:15.826Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e78fd762db6973b3a9956"
+  },
+  "temperatura": 18.3,
+  "humedad_aire": 89.9,
+  "humedad_suelo": 2433,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:51:57.489Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e7acb762db6973b3a9958"
+  },
+  "temperatura": 18,
+  "humedad_aire": 90.1,
+  "humedad_suelo": 2439,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T21:59:39.171Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e7c98762db6973b3a995a"
+  },
+  "temperatura": 18.1,
+  "humedad_aire": 89.7,
+  "humedad_suelo": 2462,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:07:20.843Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e7e66762db6973b3a995e"
+  },
+  "temperatura": 18.4,
+  "humedad_aire": 89.1,
+  "humedad_suelo": 2448,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:15:02.498Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e8034762db6973b3a9962"
+  },
+  "temperatura": 18.7,
+  "humedad_aire": 88.1,
+  "humedad_suelo": 2431,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:22:44.172Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e8201762db6973b3a9964"
+  },
+  "temperatura": 18.7,
+  "humedad_aire": 87.3,
+  "humedad_suelo": 2435,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:30:25.829Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e83cf762db6973b3a9968"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.8,
+  "humedad_suelo": 2448,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:38:07.499Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e859d762db6973b3a996a"
+  },
+  "temperatura": 19,
+  "humedad_aire": 86.3,
+  "humedad_suelo": 2447,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:45:49.170Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e876a762db6973b3a996c"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.6,
+  "humedad_suelo": 2457,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T22:53:30.833Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e8938762db6973b3a996e"
+  },
+  "temperatura": 19,
+  "humedad_aire": 85.9,
+  "humedad_suelo": 2448,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T23:01:12.504Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e8b06762db6973b3a9970"
+  },
+  "temperatura": 19,
+  "humedad_aire": 85.6,
+  "humedad_suelo": 2458,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T23:08:54.174Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e8cd3762db6973b3a9972"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.3,
+  "humedad_suelo": 2448,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T23:16:35.844Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "681e8ea1762db6973b3a9974"
+  },
+  "temperatura": 18.9,
+  "humedad_aire": 86.4,
+  "humedad_suelo": 2461,
+  "status": 0,
+  "timeServer": {
+    "$date": "2025-05-09T23:24:17.507Z"
+  },
+  "__v": 0
+}]

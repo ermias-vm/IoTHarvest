@@ -95,7 +95,7 @@ if (!fs.existsSync(imageCacheDir)) {
 }
 
 // Parámetros de la caché
-const IMAGES_CACHE_SIZE = 14; // 2 semanas (1 imagen diaria)
+const IMAGES_CACHE_SIZE = 14; // Número de imágenes a cachear
 let imagesCache = [];
 
 // Configuración de multer
@@ -190,8 +190,34 @@ const sensorSchema = new mongoose.Schema({
 const Sensor = mongoose.model('Sensor', sensorSchema);
 let cacheUltimosDatos = null;
 
-function actualizarCache(datos) {
+const SENSOR_CACHE_SIZE = 14; // Número de datos a cachear
+const SENSOR_CACHE_FILE = path.join(__dirname, 'cacheSensors.json');
+let sensorCache = [];
+
+// Cargar la caché desde el archivo al iniciar el servidor
+if (fs.existsSync(SENSOR_CACHE_FILE)) {
+  try {
+    sensorCache = JSON.parse(fs.readFileSync(SENSOR_CACHE_FILE, 'utf8'));
+  } catch (err) {
+    console.error('[CACHE] Error al leer cacheSensors.json:', err);
+    sensorCache = [];
+  }
+}
+// Cargar los últimos datos de la caché en memoria
+function actualizarSensorCacheRam(datos) {
   cacheUltimosDatos = datos;
+}
+// Actualizar la caché de sensores y guardar en el archivo JSON
+function actualizarSensorCache(nuevoDato) {
+  sensorCache.push(nuevoDato);
+  while (sensorCache.length > SENSOR_CACHE_SIZE) {
+    sensorCache.shift();
+  }
+  try {
+    fs.writeFileSync(SENSOR_CACHE_FILE, JSON.stringify(sensorCache, null, 2));
+  } catch (err) {
+    console.error('[CACHE] Error al escribir cacheSensors.json:', err);
+  }
 }
 
 // Ruta para recibir datos (POST)
@@ -200,7 +226,9 @@ app.post('/api/sensores', async (req, res) => {
   try {
     const datos = { temperatura, humedad_aire, humedad_suelo, bateria, status, timeServer: new Date() };
 
-    actualizarCache(datos);
+  
+    actualizarSensorCacheRam(datos); // cache en memoria
+    actualizarSensorCache(datos); // cache en disco (JSON)
 
     const sensor = new Sensor(datos);
     await sensor.save();
@@ -218,6 +246,9 @@ app.post('/api/sensores', async (req, res) => {
   }
 });
 
+
+
+////  GESTIOIN DE MAILS /////
 
 async function enviarMail(destinatario, status) {
   const mailPath = path.join(__dirname, 'mail', `${status}.txt`);
@@ -279,16 +310,33 @@ function toHoraEspañola(date) {
 ////  ENDPOINTS  /////
 
 // Ruta para ver los ultimos datos
+// Primero intenta devolver el dato en memoria, si no lo encuentra intenta leer el archivo JSON
 app.get('/api/sensores/ultimo', (req, res) => {
   if (cacheUltimosDatos) {
     const datosConvertidos = {
       ...cacheUltimosDatos,
       timeServer: toHoraEspañola(cacheUltimosDatos.timeServer)
     };
-    res.json(datosConvertidos);
-  } else {
-    res.status(404).json({ error: 'No hay datos en caché' });
+    return res.json(datosConvertidos);
   }
+
+  if (fs.existsSync(SENSOR_CACHE_FILE)) {
+    try {
+      const cacheArchivo = JSON.parse(fs.readFileSync(SENSOR_CACHE_FILE, 'utf8'));
+      if (Array.isArray(cacheArchivo) && cacheArchivo.length > 0) {
+        const ultimo = cacheArchivo[cacheArchivo.length - 1];
+        const datosConvertidos = {
+          ...ultimo,
+          timeServer: toHoraEspañola(ultimo.timeServer)
+        };
+        return res.json(datosConvertidos);
+      }
+    } catch (err) {
+      console.error('[CACHE] Error al leer cacheSensors.json:', err);
+    }
+  }
+
+  res.status(404).json({ error: 'No hay datos en caché' });
 });
 
 // Ruta para obtener los últimos X datos
