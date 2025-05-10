@@ -31,26 +31,39 @@ const CreateAccountPage: React.FC = () => {
   };
 
   return (
-    <div style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{
+      minHeight: '100vh',
+      width: '100vw',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      background: '#b7d2b3' // Verde claro para fondo
+    }}>
       <div
         style={{
-          height: '340px',
-          width: '220px',
-          padding: '2rem',
-          background: '#f1f7ed',
+          width: '370px',
+          maxWidth: '95vw',
+          padding: '2.7rem 2.2rem',
+          background: '#fff',
           borderRadius: '20px',
-          boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+          boxShadow: '0 0 18px rgba(0,0,0,0.13)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
-          alignItems: 'center'
+          alignItems: 'center',
+          minHeight: '470px',
+          boxSizing: 'border-box',
+          position: 'relative'
         }}
       >
         <h2 style={{
-          color: 'black',
+          color: '#222',
           textAlign: 'center',
-          marginBottom: '1rem'
-        }}>Create account</h2>
+          marginBottom: '2rem',
+          fontWeight: 700,
+          fontSize: '2rem',
+          letterSpacing: '1px'
+        }}>Sign up</h2>
         <form onSubmit={handleCreateAccount} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <input
             type="email"
@@ -65,7 +78,9 @@ const CreateAccountPage: React.FC = () => {
               borderRadius: '5px',
               border: '1px solid #7ca982',
               background: 'none',
-              color: 'black'
+              color: 'black',
+              fontSize: '1rem',
+              boxSizing: 'border-box'
             }}
           />
           <input
@@ -81,7 +96,9 @@ const CreateAccountPage: React.FC = () => {
               borderRadius: '5px',
               border: '1px solid #7ca982',
               background: 'none',
-              color: 'black'
+              color: 'black',
+              fontSize: '1rem',
+              boxSizing: 'border-box'
             }}
           />
           <button
@@ -89,40 +106,56 @@ const CreateAccountPage: React.FC = () => {
             style={{
               width: '80%',
               padding: '0.5rem',
-              marginBottom: '1rem',
+              marginBottom: '0.7rem',
               borderRadius: '5px',
               background: '#7ca982',
               color: 'white',
               border: 'none',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '1rem',
+              letterSpacing: '0.5px',
+              boxSizing: 'border-box'
             }}
-          >Create account</button>
+          >Sign up</button>
         </form>
-        <button
-          onClick={() => navigate('/login')}
-          style={{
-            width: '80%',
-            padding: '0.5rem',
-            borderRadius: '5px',
-            background: '#b81414',
-            color: 'white',
-            border: 'none',
-            cursor: 'pointer'
-          }}
-        >Back</button>
-        {(error || success) && (
-          <div style={{
-            marginTop: '1rem',
-            width: '73%',
-            textAlign: 'center',
-            fontSize: '0.9rem',
-            padding: '0.5rem',
-            borderRadius: '5px',
-            color: error ? 'red' : 'green'
-          }}>
-            {error || success}
-          </div>
-        )}
+        {/* Mensaje de error o éxito, ocupa espacio fijo para no ampliar la caja */}
+        <div style={{
+          minHeight: '1.5em',
+          marginTop: '0.2em',
+          marginBottom: '0.2em',
+          width: '80%',
+          textAlign: 'center'
+        }}>
+          {(error || success) && (
+            <span style={{
+              color: error ? 'red' : 'green',
+              fontSize: '1rem'
+            }}>
+              {error || success}
+            </span>
+          )}
+        </div>
+        <div style={{
+          marginTop: '3.5rem',
+          fontSize: '1rem',
+          color: '#333',
+          textAlign: 'center',
+          width: '100%',
+        }}>
+          Have an account?{' '}
+          <span
+            style={{
+              color: '#2d7a46',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              fontWeight: 500
+            }}
+            onClick={() => navigate('/login')}
+          >
+            Log in
+          </span>
+        </div>
       </div>
     </div>
   );

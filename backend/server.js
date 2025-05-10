@@ -53,12 +53,17 @@ const User = mongoose.model('User', userSchema);
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ error: 'User already exists' });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword });
     await user.save();
-    res.json({ message: 'User Successfully created' });
+    res.json({ message: 'User successfully created' });
   } catch (err) {
-    res.status(400).json({ error: 'Error creating user', detalles: err });
+    res.status(500).json({ error: 'Error creating user', details: err });
   }
 });
 
@@ -67,15 +72,17 @@ app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(401).json({ error: 'Incorrect email or password' });
-
+    if (!user) {
+      return res.status(401).json({ error: 'User does not exist' });
+    }
     const valid = await bcrypt.compare(password, user.password);
-    if (!valid) return res.status(401).json({ error: 'Incorrect email or password' });
-
+    if (!valid) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
     const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1d' });
     res.json({ token });
   } catch (err) {
-    res.status(500).json({ error: 'Log In Error', detalles: err });
+    res.status(500).json({ error: 'Login error', details: err });
   }
 });
 
