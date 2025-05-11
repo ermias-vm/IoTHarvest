@@ -27,6 +27,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const USED_DB = CLUSTER;  // Usar LOCAL o CLUSTER
 const MAIL_SUBJECT = "Alerta IoT Harvest - Estado del Cultivo";
+let currentUserEmail = null;
 
 // Conexión a MongoDB
 mongoose.connect(USED_DB, {
@@ -52,13 +53,26 @@ const User = mongoose.model('User', userSchema);
 // Registro de usuario
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
+
+  if (
+    !username ||
+    !password ||
+    typeof username !== 'string' ||
+    typeof password !== 'string' ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) || // Email format
+    password.length < 6
+  ) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters'});
+  }
+
   try {
     // Check if user already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash password with salt
+    const hashedPassword = await bcrypt.hash(password, 12);
     const user = new User({ username, password: hashedPassword });
     await user.save();
     res.json({ message: 'User successfully created' });
@@ -70,22 +84,38 @@ app.post('/api/register', async (req, res) => {
 // Login de usuario
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
+
+  // Validación básica de datos
+  if (
+    !username ||
+    !password ||
+    typeof username !== 'string' ||
+    typeof password !== 'string'
+  ) {
+    return res.status(400).json({ error: 'Invalid username or password.' });
+  }
+
   try {
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(401).json({ error: 'User does not exist' });
+      return res.status(401).json({ error: 'Incorrect username or password' });
     }
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      return res.status(401).json({ error: 'Incorrect password' });
+      return res.status(401).json({ error: 'Incorrect username or password' });
     }
-    const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign(
+      { userId: user._id, username: user.username },
+      JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    currentUserEmail = user.username;
     res.json({ token });
   } catch (err) {
     res.status(500).json({ error: 'Login error', details: err });
   }
 });
-
 
 ////  DATOS IMAGENES /////
 
@@ -233,7 +263,7 @@ app.post('/api/sensores', async (req, res) => {
   try {
     const datos = { temperatura, humedad_aire, humedad_suelo, bateria, status, timeServer: new Date() };
 
-
+  
     actualizarSensorCacheRam(datos); // cache en memoria
     actualizarSensorCache(datos); // cache en disco (JSON)
 
@@ -243,7 +273,7 @@ app.post('/api/sensores', async (req, res) => {
     // Enviar mail solo si status es distinto  0, 0 = OK
     if (status !== 0) {
       console.log(`[MAIL] Intentando enviar mail para status ${status} a ${process.env.MAIL_FROM}...`);
-      await enviarMail(process.env.MAIL_FROM, status);
+      await enviarMail(currentUserEmail, status);
     }
 
     res.json({ message: 'Datos recibidos y guardados', datos });
