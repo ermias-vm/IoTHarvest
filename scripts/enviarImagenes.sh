@@ -1,11 +1,11 @@
 #!/bin/bash
 # Uso:
-#   ./enviarImagenesAlServer.sh [NUM_IMAGENES] [INTERVALO]
+#   ./enviarImagenes.sh [NUM_IMAGENES] [INTERVALO]
 # - NUM_IMAGENES: número total de imágenes a enviar (por defecto 1)
 # - INTERVALO: segundos entre cada envío (por defecto 1)
-# Ejemplo: ./enviarImagenesAlServer.sh 7 10
+# Ejemplo: ./enviarImagenes.sh 7 10
 
-IN_DIR="../tests/testImages"
+IN_DIR="../backend/data/test/testImages"
 SERVER_URL="http://localhost:8080/api/images"
 INTERVAL=1
 NUM_IMAGES=1
@@ -41,3 +41,5 @@ for ((i=0; i<NUM_IMAGES; i++)); do
     sleep $INTERVAL
   fi
 done
+
+echo "Envío de imágenes completado."

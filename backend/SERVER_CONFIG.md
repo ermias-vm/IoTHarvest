@@ -24,7 +24,7 @@ Desde la carpeta raíz del proyecto, accede al directorio `backend`, inicializa 
 ```sh
 cd backend
 npm init -y
-npm install express mongoose dotenv multer bcrypt jsonwebtoken nodemailer cors
+npm install express mongoose dotenv multer bcrypt jsonwebtoken nodemailer cors cloudinary
 ```
 
 ### 🔹 Configuración de MongoDB

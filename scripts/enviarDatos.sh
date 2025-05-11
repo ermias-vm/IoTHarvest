@@ -5,7 +5,7 @@
 # - NUM_ENVIOS: número total de envíos a realizar (por defecto 10, máximo 300)
 # - INTERVALO: segundos entre cada envío (por defecto 1, máximo 60)
 # - STATUS: valor del campo status a enviar (por defecto 0)
-# Ejemplo: ./enviarDatosSensoresToServer.sh 20 5 3
+# Ejemplo: ./enviarDatos.sh 20 5 3
 
 # Configuración por defecto
 NUM_ENVIOS=10
@@ -53,7 +53,7 @@ for ((i=1; i<=NUM_ENVIOS; i++)); do
         }')
 
     echo "Enviando datos: $JSON_PAYLOAD"
-    curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" $SERVER_URL
+curl -X POST -H "Content-Type: application/json" -H "X-Test-Data: true" -d "$JSON_PAYLOAD" $SERVER_URL
 
     sleep $INTERVALO
 done

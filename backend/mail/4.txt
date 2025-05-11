@@ -1,7 +1,0 @@
-Hola,
-
-Queremos informarte que hemos detectado un nivel bajo de batería en el sistema de monitoreo instalado en tu cultivo 📍.
-
-Para evitar interrupciones en la recolección de datos y asegurar un seguimiento continuo de las condiciones del entorno, te recomendamos realizar un cambio de baterías lo antes posible 🛠️⚡.
-
-🌿 IoT Harvest — Tecnología que cultiva contigo.

@@ -1,21 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cloudinary = require('cloudinary').v2;
 const cors = require('cors');
 const app = express();
-app.use(cors());
-
-//MULTER para imágenes
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-// Middleware para recibir datos en formato JSON
-app.use(express.json());
-app.use('/imageCache', express.static(path.join(__dirname, 'imageCache')));
+const https = require('https');
+const http = require('http');
 
-// Colores ANSI
+
+app.use(cors());
+app.use(express.json());
+app.use('/imageCache', express.static(path.join(__dirname, 'data/cache/imageCache')));
+
 const GREEN = "\x1b[32m";
 const CYAN = "\x1b[36m";
 const RESET = "\x1b[0m";
@@ -25,13 +26,30 @@ const LOCAL = 'mongodb://localhost/iotharvest';
 const CLUSTER = process.env.MONGODB_URL;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const USED_DB = CLUSTER;  // Usar LOCAL o CLUSTER
+const USED_DB = CLUSTER;
 const MAIL_SUBJECT = "Alerta IoT Harvest - Estado del Cultivo";
-let currentUserEmail = null;
+let currentUserEmail =  process.env.MAIL_FROM;
+
+const USE_CLOUDINARY = true; // true para usar Cloudinary
+const CLOUDINARY_COOLDOWN_SECONDS = 10; // Cooldown en segundos entre subidas
+let lastCloudinaryUpload = 0;
+
+
+// --- CONEXIÓN A MONGODB  I CLOWDUDINARY---
+const sensorSchema = new mongoose.Schema({
+  temperatura: { type: Number, required: true },
+  humedad_aire: { type: Number, required: true },
+  humedad_suelo: { type: Number, required: true },
+  status: { type: Number, required: true },
+  timeServer: { type: Date, default: Date.now },
+  isTestData: { type: Boolean, default: false }
+}, { collection: 'sensorsData' });
+
+const Sensor = mongoose.model('Sensor', sensorSchema);
 
 // Conexión a MongoDB
 mongoose.connect(USED_DB, {
-  dbName: 'iotharvest' // Nombre de la base de datos
+  dbName: 'iotharvest'
 })
   .then(() => {
     const dbType = USED_DB.includes('localhost') ? `${GREEN}Local${RESET}` : `${CYAN}Cluster${RESET}`;
@@ -39,9 +57,153 @@ mongoose.connect(USED_DB, {
   })
   .catch(err => console.error('Error al conectar:', err));
 
+  // Configuración de Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-////  AUTENTIFICACION /////
 
+// --- CREAR CARPETAS SI NO EXISTEN ---
+const dataDir = path.join(__dirname, 'data');
+const imagesDir = path.join(dataDir, 'images');
+const sensorsDir = path.join(dataDir, 'sensors');
+const cacheDir = path.join(dataDir, 'cache');
+const imageCacheDir = path.join(cacheDir, 'imageCache');
+const mailDir = path.join(dataDir, 'mail');
+
+[imagesDir, sensorsDir, cacheDir, imageCacheDir, mailDir].forEach(dir => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
+
+
+// --- SENSORS CACHE Y SENSORS JSON ---
+const SENSOR_CACHE_SIZE = 14;
+const SENSOR_CACHE_FILE = path.join(cacheDir, 'sensorCache.json');
+let sensorCache = [];
+let sensorsJson = [];
+let currentSensorsDate = getTodayDateString();
+let currentSensorsFile = path.join(sensorsDir, `${currentSensorsDate}.json`);
+
+// Cargar la caché desde el archivo al iniciar el servidor
+let cacheNeedsInit = false;
+
+if (fs.existsSync(SENSOR_CACHE_FILE)) {
+  try {
+    const cacheContent = fs.readFileSync(SENSOR_CACHE_FILE, 'utf8');
+    if (cacheContent.trim().length === 0) {
+      console.warn('[CACHE] sensorCache.json está vacío.');
+      cacheNeedsInit = true;
+    } else {
+      sensorCache = JSON.parse(cacheContent);
+      if (!Array.isArray(sensorCache) || sensorCache.length === 0) {
+        console.warn('[CACHE] sensorCache.json no contiene datos.');
+        cacheNeedsInit = true;
+      }
+    }
+  } catch (err) {
+    console.error('[CACHE] Error al leer sensorCache.json:', err);
+    cacheNeedsInit = true;
+  }
+} else {
+  cacheNeedsInit = true;
+}
+
+async function initSensorCache() {
+  // Buscar el último archivo .json en /data/sensors/
+  const files = fs.readdirSync(sensorsDir)
+    .filter(f => f.endsWith('.json'))
+    .sort()
+    .reverse(); // El más reciente primero
+
+  let loaded = false;
+  for (const file of files) {
+    const filePath = path.join(sensorsDir, file);
+    try {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (Array.isArray(data) && data.length > 0) {
+        sensorCache = data.slice(-SENSOR_CACHE_SIZE);
+        console.log(`[CACHE] sensorCache.json inicializado con datos de backend/data/sensors/${file}`);
+        loaded = true;
+        break;
+      }
+    } catch (err) {
+      // Ignorar archivos corruptos
+    }
+  }
+
+  // Si no hay archivos válidos, consulta MongoDB
+  if (!loaded) {
+    try {
+      const Sensor = mongoose.model('Sensor');
+      const datos = await Sensor.find().sort({ timeServer: -1 }).limit(SENSOR_CACHE_SIZE);
+      sensorCache = datos.reverse().map(d => d.toObject());
+      console.log('[CACHE] sensorCache.json inicializado con datos de MongoDB');
+    } catch (err) {
+      console.error('[CACHE] No se pudo inicializar la caché desde MongoDB:', err);
+      sensorCache = [];
+    }
+  }
+
+  // Guardar la caché inicializada
+  try {
+    fs.writeFileSync(SENSOR_CACHE_FILE, JSON.stringify(sensorCache, null, 2));
+  } catch (err) {
+    console.error('[CACHE] Error al guardar sensorCache.json:', err);
+  }
+}
+
+// Llama a la inicialización si es necesario
+if (cacheNeedsInit) {
+  console.log('[CACHE] Inicializando sensorCache.json...');
+  (async () => { await initSensorCache(); })();
+}
+
+// Cargar solo el archivo de sensores del día actual
+loadSensorsJsonForToday();
+
+// Cargar los últimos datos de la caché en memoria
+let cacheUltimosDatos = null;
+function actualizarSensorCacheRam(datos) {
+  cacheUltimosDatos = datos;
+}
+// Actualizar la caché de sensores y guardar en el archivo JSON
+function actualizarSensorCache(nuevoDato) {
+  sensorCache.push(nuevoDato);
+  while (sensorCache.length > SENSOR_CACHE_SIZE) {
+    sensorCache.shift();
+  }
+  try {
+    fs.writeFileSync(SENSOR_CACHE_FILE, JSON.stringify(sensorCache, null, 2));
+  } catch (err) {
+    console.error('[CACHE] Error al escribir sensorCache.json:', err);
+  }
+}
+
+// Guardar todos los datos de sensores en el archivo del día correspondiente
+function guardarSensorHistorico(nuevoDato) {
+  const today = getTodayDateString();
+  if (today !== currentSensorsDate) {
+    saveSensorsJsonForToday();
+    loadSensorsJsonForToday();
+  }
+  sensorsJson.push(nuevoDato);
+  saveSensorsJsonForToday();
+}
+
+function saveSensorsJsonForToday() {
+  try {
+    fs.writeFileSync(currentSensorsFile, JSON.stringify(sensorsJson, null, 2));
+  } catch (err) {
+    console.error('[SENSORS] Error al escribir', currentSensorsFile, err);
+  }
+}
+
+
+
+
+// --- AUTENTIFICACION ---
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true }
@@ -49,29 +211,24 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-
 // Registro de usuario
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
-
   if (
     !username ||
     !password ||
     typeof username !== 'string' ||
     typeof password !== 'string' ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) || // Email format
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username) ||
     password.length < 6
   ) {
     return res.status(400).json({ error: 'Password must be at least 6 characters'});
   }
-
   try {
-    // Check if user already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' });
     }
-    // Hash password with salt
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = new User({ username, password: hashedPassword });
     await user.save();
@@ -84,8 +241,6 @@ app.post('/api/register', async (req, res) => {
 // Login de usuario
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-
-  // Validación básica de datos
   if (
     !username ||
     !password ||
@@ -94,7 +249,6 @@ app.post('/api/login', async (req, res) => {
   ) {
     return res.status(400).json({ error: 'Invalid username or password.' });
   }
-
   try {
     const user = await User.findOne({ username });
     if (!user) {
@@ -109,7 +263,6 @@ app.post('/api/login', async (req, res) => {
       JWT_SECRET,
       { expiresIn: '1d' }
     );
-
     currentUserEmail = user.username;
     res.json({ token });
   } catch (err) {
@@ -117,31 +270,15 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-////  DATOS IMAGENES /////
-
-// Crear carpeta test imagenes si no existe
-const imagesDir = path.join(__dirname, '../tests/outgoingImages');
-if (!fs.existsSync(imagesDir)) {
-  fs.mkdirSync(imagesDir, { recursive: true });
-}
-
-// Crear carpeta de caché si no existe
-const imageCacheDir = path.join(__dirname, 'imageCache');
-if (!fs.existsSync(imageCacheDir)) {
-  fs.mkdirSync(imageCacheDir, { recursive: true });
-}
-
-// Parámetros de la caché
-const IMAGES_CACHE_SIZE = 14; // Número de imágenes a cachear
+// --- DATOS IMAGENES ---
+const IMAGES_CACHE_SIZE = 14;
 let imagesCache = [];
 
-// Configuración de multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, imagesDir);
   },
   filename: function (req, file, cb) {
-    // Obtener la fecha en hora española y formatearla para el nombre de archivo
     const now = new Date().toLocaleString('sv-SE', { timeZone: 'Europe/Madrid' }).replace(/[\s:]/g, '-').replace(',', '');
     const ext = path.extname(file.originalname);
     cb(null, `${now}${ext}`);
@@ -158,7 +295,6 @@ const upload = multer({
   }
 });
 
-// Configuración de multer para guardar en la caché
 const cacheStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, imageCacheDir);
@@ -181,98 +317,90 @@ const cacheUpload = multer({
 });
 
 // Ruta para recibir imágenes JPG
-app.post('/api/images', cacheUpload.single('imagen'), (req, res) => {
+app.post('/api/images', cacheUpload.single('imagen'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No se recibió ninguna imagen JPG' });
   }
-  // Añadir a la caché en memoria
   imagesCache.push({
     filename: req.file.filename,
     path: req.file.path,
     uploadDate: new Date()
   });
 
-  // Copiar la imagen a outgoingImages (simula subida a S3 AWS)
+  // Copiar la imagen a imagesDir (todas las imágenes recibidas)
   const outgoingPath = path.join(imagesDir, req.file.filename);
   fs.copyFile(req.file.path, outgoingPath, (err) => {
     if (err) {
-      console.error('Error al copiar imagen a outgoingImages:', err);
+      console.error('Error al copiar imagen a images:', err);
     }
   });
 
   // Limitar tamaño de la caché y borrar archivos antiguos
   while (imagesCache.length > IMAGES_CACHE_SIZE) {
     const removed = imagesCache.shift();
-    // Eliminar archivo antiguo del disco
     fs.unlink(removed.path, err => {
       if (err) console.error('Error al borrar imagen de la caché:', err);
     });
   }
+
+  // CLOUDINARY UPLOAD
+if (USE_CLOUDINARY) {
+  const now = Date.now();
+  if (now - lastCloudinaryUpload >= CLOUDINARY_COOLDOWN_SECONDS * 1000) {
+    try {
+      const publicId = req.file.filename.replace(/\.[^/.]+$/, ""); // quita extensión
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "IoTHarvestImages",
+        public_id: publicId, // <-- nombre igual que en local
+        overwrite: true
+      });
+      lastCloudinaryUpload = now;
+      console.log(`[CLOUDINARY] Imagen subida: ${result.secure_url}`);
+      return res.json({ 
+        message: 'Imagen recibida, guardada, cacheada y subida a Cloudinary', 
+        filename: req.file.filename, 
+        cloudinaryUrl: result.secure_url 
+      });
+    } catch (err) {
+      console.error('[CLOUDINARY] Error al subir imagen:', err);
+    }
+  } else {
+    console.log('[CLOUDINARY] Cooldown activo, imagen solo guardada localmente.');
+  }
+}
   res.json({ message: 'Imagen recibida, guardada y cacheada', filename: req.file.filename });
 });
 
 
-
-////  DATOS SENSORES /////
-
-// Esquema para los datos de sensores
-const sensorSchema = new mongoose.Schema({
-  temperatura: { type: Number, required: true },
-  humedad_aire: { type: Number, required: true },
-  humedad_suelo: { type: Number, required: true },
-  status: { type: Number, required: true },
-  timeServer: { type: Date, default: Date.now }
-}, { collection: 'sensorsData' });
-
-const Sensor = mongoose.model('Sensor', sensorSchema);
-let cacheUltimosDatos = null;
-
-const SENSOR_CACHE_SIZE = 14; // Número de datos a cachear
-const SENSOR_CACHE_FILE = path.join(__dirname, 'cacheSensors.json');
-let sensorCache = [];
-
-// Cargar la caché desde el archivo al iniciar el servidor
-if (fs.existsSync(SENSOR_CACHE_FILE)) {
-  try {
-    sensorCache = JSON.parse(fs.readFileSync(SENSOR_CACHE_FILE, 'utf8'));
-  } catch (err) {
-    console.error('[CACHE] Error al leer cacheSensors.json:', err);
-    sensorCache = [];
-  }
-}
-// Cargar los últimos datos de la caché en memoria
-function actualizarSensorCacheRam(datos) {
-  cacheUltimosDatos = datos;
-}
-// Actualizar la caché de sensores y guardar en el archivo JSON
-function actualizarSensorCache(nuevoDato) {
-  sensorCache.push(nuevoDato);
-  while (sensorCache.length > SENSOR_CACHE_SIZE) {
-    sensorCache.shift();
-  }
-  try {
-    fs.writeFileSync(SENSOR_CACHE_FILE, JSON.stringify(sensorCache, null, 2));
-  } catch (err) {
-    console.error('[CACHE] Error al escribir cacheSensors.json:', err);
-  }
-}
+// --- DATOS SENSORES ---
 
 // Ruta para recibir datos (POST)
 app.post('/api/sensores', async (req, res) => {
   const { temperatura, humedad_aire, humedad_suelo, bateria, status } = req.body;
-  try {
-    const datos = { temperatura, humedad_aire, humedad_suelo, bateria, status, timeServer: new Date() };
 
-  
-    actualizarSensorCacheRam(datos); // cache en memoria
-    actualizarSensorCache(datos); // cache en disco (JSON)
+  // Por defecto es false, solo será true si el header está presente y es 'true'
+  const isTestData = req.headers['x-test-data'] === 'true';
+
+  try {
+    const datos = { 
+      temperatura, 
+      humedad_aire, 
+      humedad_suelo, 
+      bateria, 
+      status, 
+      timeServer: new Date(),
+      isTestData // este campo indica si es test o no
+    };
+
+    actualizarSensorCacheRam(datos);
+    actualizarSensorCache(datos);
+    guardarSensorHistorico(datos);
 
     const sensor = new Sensor(datos);
     await sensor.save();
 
-    // Enviar mail solo si status es distinto  0, 0 = OK
     if (status !== 0) {
-      console.log(`[MAIL] Intentando enviar mail para status ${status} a ${process.env.MAIL_FROM}...`);
+      console.log(`[MAIL] Intentando enviar mail para status ${status} a ${currentUserEmail}...`);
       await enviarMail(currentUserEmail, status);
     }
 
@@ -284,12 +412,11 @@ app.post('/api/sensores', async (req, res) => {
 });
 
 
-
-////  GESTIOIN DE MAILS /////
+// --- GESTIÓN DE MAILS ---
 
 async function enviarMail(destinatario, status) {
-  const mailPath = path.join(__dirname, 'mail', `${status}.txt`);
-  const footerImagePath = path.join(__dirname, 'mail', 'pie_correo.png');
+  const mailPath = path.join(mailDir, `${status}.txt`);
+  const footerImagePath = path.join(mailDir, 'pie_correo.png');
   let cuerpoTexto;
 
   try {
@@ -322,7 +449,7 @@ async function enviarMail(destinatario, status) {
       from: process.env.MAIL_FROM,
       to: destinatario,
       subject: MAIL_SUBJECT,
-      text: cuerpoTexto,  // fallback para clientes sin soporte HTML
+      text: cuerpoTexto,
       html: htmlBody,
       attachments: [{
         filename: 'pie_correo.png',
@@ -337,17 +464,33 @@ async function enviarMail(destinatario, status) {
   }
 }
 
-
-
 // Conversión de fecha a hora local de España (Europe/Madrid)
 function toHoraEspañola(date) {
   return new Date(date).toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 }
+// Función para obtener la fecha de hoy en formato YYYY-MM-DD
+function getTodayDateString() {
+  return new Date().toISOString().slice(0, 10);
+}
+// Función para cargar el archivo JSON de sensores del día actual
+function loadSensorsJsonForToday() {
+  currentSensorsDate = getTodayDateString();
+  currentSensorsFile = path.join(sensorsDir, `${currentSensorsDate}.json`);
+  if (fs.existsSync(currentSensorsFile)) {
+    try {
+      sensorsJson = JSON.parse(fs.readFileSync(currentSensorsFile, 'utf8'));
+    } catch (err) {
+      console.error('[SENSORS] Error al leer', currentSensorsFile, err);
+      sensorsJson = [];
+    }
+  } else {
+    sensorsJson = [];
+  }
+}
 
-////  ENDPOINTS  /////
+// --- ENDPOINTS ---
 
-// Ruta para ver los ultimos datos
-// Primero intenta devolver el dato en memoria, si no lo encuentra intenta leer el archivo JSON
+// Último dato en caché
 app.get('/api/sensores/ultimo', (req, res) => {
   if (cacheUltimosDatos) {
     const datosConvertidos = {
@@ -356,7 +499,6 @@ app.get('/api/sensores/ultimo', (req, res) => {
     };
     return res.json(datosConvertidos);
   }
-
   if (fs.existsSync(SENSOR_CACHE_FILE)) {
     try {
       const cacheArchivo = JSON.parse(fs.readFileSync(SENSOR_CACHE_FILE, 'utf8'));
@@ -369,21 +511,18 @@ app.get('/api/sensores/ultimo', (req, res) => {
         return res.json(datosConvertidos);
       }
     } catch (err) {
-      console.error('[CACHE] Error al leer cacheSensors.json:', err);
+      console.error('[CACHE] Error al leer sensorCache.json:', err);
     }
   }
-
   res.status(404).json({ error: 'No hay datos en caché' });
 });
 
-// Ruta para obtener los últimos X datos
+// Últimos X datos (MongoDB)
 app.get('/api/sensores/ultimos/:cantidad', async (req, res) => {
   const cantidad = parseInt(req.params.cantidad, 10);
-
   if (isNaN(cantidad) || cantidad <= 0) {
     return res.status(400).json({ error: 'La cantidad debe ser un número positivo válido.' });
   }
-
   try {
     const datos = await Sensor.find().sort({ timeServer: -1 }).limit(cantidad);
     const datosConvertidos = datos.map(d => ({
@@ -396,7 +535,7 @@ app.get('/api/sensores/ultimos/:cantidad', async (req, res) => {
   }
 });
 
-// Ruta para ver todos los datos (GET)
+// Todos los datos (MongoDB)
 app.get('/api/sensores', async (req, res) => {
   try {
     const datos = await Sensor.find();
@@ -410,10 +549,27 @@ app.get('/api/sensores', async (req, res) => {
   }
 });
 
-// Endpoint consultar la cache de imágenes (solo metadatos) 
-app.get('/api/images/cache', (req, res) => {
-  res.json(imagesCache);
+// Todos los datos del día actual (JSON redundante)
+app.get('/api/sensors/json', (req, res) => {
+  res.json(sensorsJson);
 });
+
+// Todos los datos de un día concreto (JSON redundante)
+app.get('/api/sensors/json/:date', (req, res) => {
+  const date = req.params.date; // formato YYYY-MM-DD
+  const file = path.join(sensorsDir, `${date}.json`);
+  if (fs.existsSync(file)) {
+    try {
+      const datos = JSON.parse(fs.readFileSync(file, 'utf8'));
+      res.json(datos);
+    } catch (err) {
+      res.status(500).json({ error: 'Error al leer archivo', details: err });
+    }
+  } else {
+    res.status(404).json({ error: 'No data file for this date' });
+  }
+});
+
 
 // Endpoint para servir el contenido de prediction.txt
 app.get('/api/prediction', (req, res) => {
@@ -427,6 +583,81 @@ app.get('/api/prediction', (req, res) => {
   });
 });
 
-// Iniciar el servidor
+// Cache de imágenes (solo metadatos)
+app.get('/api/images/cache', (req, res) => {
+  res.json(imagesCache);
+});
+
+// Descargar N imágenes de Cloudinary
+const testDownloadDir = path.join(__dirname, 'data/test/downloadImages');
+
+// Función para descargar una imagen desde una URL
+function downloadImage(url, dest) {
+  return new Promise((resolve, reject) => {
+    const mod = url.startsWith('https') ? https : http;
+    const file = fs.createWriteStream(dest);
+    mod.get(url, response => {
+      if (response.statusCode !== 200) {
+        reject(new Error(`Failed to get '${url}' (${response.statusCode})`));
+        return;
+      }
+      response.pipe(file);
+      file.on('finish', () => file.close(resolve));
+    }).on('error', err => {
+      fs.unlink(dest, () => reject(err));
+    });
+  });
+}
+
+// Descargar N imágenes de Cloudinary 
+app.post('/api/images/download-cloudinary', async (req, res) => {
+  const { password, n } = req.body;
+  const adminPass = process.env.ADMIN_SCRIPT_PASS;
+  let cantidad = parseInt(n, 10);
+  if (isNaN(cantidad) || cantidad < 1) cantidad = 1;
+  if (cantidad > 10) cantidad = 10;
+
+  if (!password || password !== adminPass) {
+    return res.status(403).json({ error: 'Forbidden: Invalid password' });
+  }
+
+  // Crear carpeta si no existe
+  if (!fs.existsSync(testDownloadDir)) {
+    fs.mkdirSync(testDownloadDir, { recursive: true });
+  }
+
+  try {
+    const result = await cloudinary.search
+      .expression('folder:IoTHarvestImages')
+      .sort_by('uploaded_at','desc')
+      .max_results(cantidad)
+      .execute();
+
+    const images = result.resources.map(img => ({
+      url: img.secure_url,
+      filename: path.basename(img.public_id) + '.' + img.format
+    }));
+
+    // Descargar imágenes usando solo módulos estándar
+    let downloaded = [];
+    for (const img of images) {
+      const destPath = path.join(testDownloadDir, img.filename);
+      // Asegura que la carpeta destino existe
+      const destDir = path.dirname(destPath);
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+      }
+      await downloadImage(img.url, destPath);
+      downloaded.push(img.filename);
+    }
+
+    res.json({ message: `Descargadas ${downloaded.length} imágenes`, files: downloaded });
+  } catch (err) {
+    console.error('[CLOUDINARY] Error al descargar imágenes:', err);
+    res.status(500).json({ error: 'Error al descargar imágenes de Cloudinary' });
+  }
+});
+
+
 const PORT = 8080;
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));

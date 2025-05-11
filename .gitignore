@@ -1,9 +1,8 @@
 comands.txt
 node_modules/
 .env
-
 dataset/
-outgoingImages/
-imageCache/
-sensorCache/
-cacheSensors.json
+
+# Archivos de data/
+backend/data/*
+!backend/data/README.md
