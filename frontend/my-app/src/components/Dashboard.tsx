@@ -34,8 +34,10 @@ const Dashboard = () => {
 
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [latestImageUrl, setLatestImageUrl] = useState<string | null>(null);
+  const [prediction, setPrediction] = useState('');
 
   const navigate = useNavigate();
+  const userEmail = localStorage.getItem('userEmail');
 
   useEffect(() => {
     const fetchSensorData = async () => {
@@ -96,11 +98,29 @@ const Dashboard = () => {
     fetchLatestImage();
   }, []);
 
+  useEffect(() => {
+    // Fetch IA prediction
+    fetch('http://localhost:8080/api/prediction')
+      .then(res => res.text())
+      .then(text => setPrediction(text.trim()))
+      .catch(() => setPrediction('Error'));
+  }, []);
+
   return (
     <div className="background-container">
       <h1 className="title">IoT Harvest</h1>
-      <div style={{ position: 'absolute', top: '1rem', left: '1rem', padding: '0.5rem 1rem', background: '#7ca982', color: 'white', borderRadius: '5px' }}>
-        User
+      <div
+        style={{
+          position: 'absolute',
+          top: 'var(--logout-button-top, 1rem)',
+          left: 'var(--logout-button-left, 1rem)',
+          padding: '0.5rem 1rem',
+          background: '#7ca982',
+          color: 'white',
+          borderRadius: '5px'
+        }}
+      >
+        {userEmail || 'User'}
       </div>
       <button
         onClick={() => navigate('/login')}
@@ -111,15 +131,15 @@ const Dashboard = () => {
         <div className="graphs-container">
           <div className="sensors-grid">
             <iframe
-              style={{ width: '100%', height: '300px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
+              style={{ width: '90%', height: '350px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
               src="https://charts.mongodb.com/charts-project-0-qzasans/embed/charts?id=847cde5d-d152-45d1-9e85-2312054e05d8&maxDataAge=3600&theme=light&autoRefresh=true"
             />
             <iframe
-              style={{ width: '100%', height: '300px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
+              style={{ width: '90%', height: '350px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
               src="https://charts.mongodb.com/charts-project-0-qzasans/embed/charts?id=8aff4f45-6bd9-4eaa-b77c-6150ba205924&maxDataAge=3600&theme=light&autoRefresh=true"
             />
             <iframe
-              style={{ width: '100%', height: '300px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
+              style={{ width: '90%', height: '350px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
               src="https://charts.mongodb.com/charts-project-0-qzasans/embed/charts?id=f4a60464-3d7b-4880-a5ea-bea40bb6ce66&maxDataAge=3600&theme=light&autoRefresh=true"
             />
             <div className="sensor-container">
@@ -129,7 +149,7 @@ const Dashboard = () => {
                   <>
                     <p>Temperature: {sensorData.temperatura}°C</p>
                     <p>Air Humidity: {sensorData.humedad_aire}%</p>
-                    <p>Soil Humidity: {sensorData.humedad_suelo}%</p>
+                    <p>Ground Humidity: {sensorData.humedad_suelo}%</p>
                     <p>Last Update: {sensorData.timeServer || 'N/A'}</p>
                   </>
                 ) : (
@@ -144,13 +164,48 @@ const Dashboard = () => {
           <div className="photo-inner-container">
             <div className="photo-box-top">
               {latestImageUrl ? (
-                <img src={latestImageUrl} alt="Latest Capture" style={{ width: '75%', height: '75%', objectFit: 'cover', borderRadius: '8px' }} />
+                <>
+                  <img src={latestImageUrl} alt="Latest Capture" style={{ width: '67%', height: '70%', objectFit: 'cover'}} />
+                  {/* Mostrar timestamp debajo de la foto */}
+                  {(() => {
+                    const filename = latestImageUrl.split('/').pop() || '';
+                    const parts = filename.replace('.jpg', '').split('-');
+                    let formatted = '';
+                    if (parts.length === 6) {
+                      const [year, month, day, hour, min] = parts;
+                      const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                      const mesNombre = meses[parseInt(month, 10) - 1] || '';
+                      formatted = `${day} de ${mesNombre} de ${year}, ${hour}:${min} h`;
+                    }
+                    return (
+                      <>
+                        <div style={{
+                          marginTop: 'var(--photo-timestamp-margin, 3vh)',
+                          color: '#333',
+                          fontSize: '1rem',
+                          textAlign: 'center',
+                          wordBreak: 'break-all'
+                        }}>
+                          {formatted}
+                        </div>
+                        <div style={{
+                          marginTop: '1vh',
+                          color: '#666',
+                          fontSize: '1rem',
+                          textAlign: 'center'
+                        }}>
+                          IA prediction: {prediction}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </>
               ) : (
                 <p style={{ textAlign: 'center' }}>Loading image...</p>
               )}
             </div>
             <div className="photo-box-bottom">
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '0.5rem', color: '#000' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '0.2rem', color: '#000' }}>
                 {weather && (
                   <div style={{
                     background: 'transparent',

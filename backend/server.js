@@ -233,7 +233,7 @@ app.post('/api/sensores', async (req, res) => {
   try {
     const datos = { temperatura, humedad_aire, humedad_suelo, bateria, status, timeServer: new Date() };
 
-  
+
     actualizarSensorCacheRam(datos); // cache en memoria
     actualizarSensorCache(datos); // cache en disco (JSON)
 
@@ -385,6 +385,17 @@ app.get('/api/images/cache', (req, res) => {
   res.json(imagesCache);
 });
 
+// Endpoint para servir el contenido de prediction.txt
+app.get('/api/prediction', (req, res) => {
+  const predictionPath = path.join(__dirname, '../frontend/prediction.txt');
+  fs.readFile(predictionPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('[PREDICTION] Error al leer prediction.txt:', err);
+      return res.status(500).json({ error: 'No se pudo leer prediction.txt' });
+    }
+    res.type('text/plain').send(data);
+  });
+});
 
 // Iniciar el servidor
 const PORT = 8080;

@@ -23,6 +23,7 @@ const LogInPage: React.FC<Props> = ({ onLogIn }) => {
       const data = await response.json();
       if (response.ok && data.token) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', username);
         onLogIn();
         navigate('/dashboard');
       } else {
