@@ -131,30 +131,32 @@ const Dashboard = () => {
         <div className="graphs-container">
           <div className="sensors-grid">
             <iframe
-              style={{ width: '90%', height: '350px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
+              style={{ width: '90%', height: '47%', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
               src="https://charts.mongodb.com/charts-project-0-qzasans/embed/charts?id=847cde5d-d152-45d1-9e85-2312054e05d8&maxDataAge=3600&theme=light&autoRefresh=true"
             />
             <iframe
-              style={{ width: '90%', height: '350px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
+              style={{ width: '90%', height: '47%', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
               src="https://charts.mongodb.com/charts-project-0-qzasans/embed/charts?id=8aff4f45-6bd9-4eaa-b77c-6150ba205924&maxDataAge=3600&theme=light&autoRefresh=true"
             />
             <iframe
-              style={{ width: '90%', height: '350px', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
+              style={{ width: '90%', height: '47%', border: 'none', borderRadius: '8px', boxShadow: '0 2px 10px rgba(70, 76, 79, 0.2)', marginTop: '0.5rem', background: 'transparent' }}
               src="https://charts.mongodb.com/charts-project-0-qzasans/embed/charts?id=f4a60464-3d7b-4880-a5ea-bea40bb6ce66&maxDataAge=3600&theme=light&autoRefresh=true"
             />
             <div className="sensor-container">
               <div className="sensor-title">Real time data</div>
-              <div className="sensor-data">
-                {sensorData ? (
-                  <>
-                    <p>Temperature: {sensorData.temperatura}°C</p>
-                    <p>Air Humidity: {sensorData.humedad_aire}%</p>
-                    <p>Ground Humidity: {sensorData.humedad_suelo}%</p>
-                    <p>Last Update: {sensorData.timeServer || 'N/A'}</p>
-                  </>
-                ) : (
-                  <p>Loading sensor data...</p>
-                )}
+              <div className="sensor-data-wrapper">
+                <div className="sensor-data">
+                  {sensorData ? (
+                    <>
+                      <p>Temperature: {sensorData.temperatura}°C</p>
+                      <p>Air Humidity: {sensorData.humedad_aire}%</p>
+                      <p>Ground Humidity: {sensorData.humedad_suelo}%</p>
+                      <p>Last Update: {sensorData.timeServer || 'N/A'}</p>
+                    </>
+                  ) : (
+                    <p>Loading sensor data...</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
