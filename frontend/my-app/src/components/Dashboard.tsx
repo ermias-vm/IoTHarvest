@@ -173,9 +173,9 @@ const Dashboard = () => {
                     let formatted = '';
                     if (parts.length === 6) {
                       const [year, month, day, hour, min] = parts;
-                      const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-                      const mesNombre = meses[parseInt(month, 10) - 1] || '';
-                      formatted = `${day} de ${mesNombre} de ${year}, ${hour}:${min} h`;
+                      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                      const monthName = months[parseInt(month, 10) - 1] || '';
+                      formatted = `${day} of ${monthName} ${year}, ${hour}:${min} h`;
                     }
                     return (
                       <>
