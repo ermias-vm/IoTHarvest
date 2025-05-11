@@ -20,7 +20,7 @@ DATA_DIR = 'dataset_patches/'  #Dataset patcheado
 IMAGE_SIZE = (224, 224)
 BATCH_SIZE = 32
 EPOCHS = 7
-MODEL_PATH = 'leaf_patch_model.keras'
+MODEL_PATH = 'leaf_patch_model.h5'
 
 # ===== 2. Preprocessing =====
 datagen = ImageDataGenerator(
@@ -32,8 +32,6 @@ datagen = ImageDataGenerator(
     zoom_range=0.2,
     horizontal_flip=True,
     fill_mode='nearest',
-    brightness_range=[0.8, 1.2],
-    channel_shift_range=30,
 )
 
 train_generator = datagen.flow_from_directory(
@@ -75,7 +73,12 @@ model.compile(
 
 # ===== 4. Callbacks =====
 callbacks = [
-    ModelCheckpoint(MODEL_PATH, monitor='val_accuracy', save_best_only=True, mode='max'),
+    ModelCheckpoint(
+    MODEL_PATH,
+    monitor='val_accuracy',
+    save_best_only=True,
+    mode='max'
+    ),
     EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 ]
 
@@ -108,7 +111,7 @@ def focal_loss(gamma=2., alpha=0.25):
     return focal_loss_fixed
 
 # Descongela les últimes capes
-for layer in base_model.layers[:-10]:
+for layer in base_model.layers[:-40]:
     layer.trainable = False
 
 model.compile(
@@ -124,6 +127,9 @@ history_fine = model.fit(
     callbacks=callbacks,
     class_weight=class_weights
 )
+
+model.save("leaf_patch_model.h5")
+
 
 # ===== 8. Evaluation =====
 # Plot training history
@@ -142,7 +148,7 @@ print(f"\nValidation Metrics:\nAccuracy: {accuracy:.2f}\nPrecision: {precision:.
 # Prediccions
 val_generator.reset()
 preds = model.predict(val_generator)
-pred_labels = (preds > 0.5).astype(int)
+pred_labels = (preds > 0.4).astype(int)
 
 true_labels = val_generator.classes
 labels = list(val_generator.class_indices.keys())
