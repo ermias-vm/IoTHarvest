@@ -32,6 +32,8 @@ let currentUserEmail =  process.env.MAIL_FROM;
 
 const USE_CLOUDINARY = true; // true para usar Cloudinary
 const CLOUDINARY_COOLDOWN_SECONDS = 10; // Cooldown en segundos entre subidas
+const IMAGES_CACHE_SIZE = 14;
+let imagesCache = [];
 let lastCloudinaryUpload = 0;
 
 
@@ -160,6 +162,9 @@ if (cacheNeedsInit) {
   (async () => { await initSensorCache(); })();
 }
 
+// Inicializar imagesCache DESPUÉS de que las carpetas estén creadas
+initializeImagesCache();
+
 // Cargar solo el archivo de sensores del día actual
 loadSensorsJsonForToday();
 
@@ -199,7 +204,6 @@ function saveSensorsJsonForToday() {
     console.error('[SENSORS] Error al escribir', currentSensorsFile, err);
   }
 }
-
 
 
 
@@ -270,9 +274,59 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+
 // --- DATOS IMAGENES ---
-const IMAGES_CACHE_SIZE = 14;
-let imagesCache = [];
+
+// --- FUNCIÓN PARA INICIALIZAR IMAGESCACHE ---
+function initializeImagesCache() {
+  if (fs.existsSync(imageCacheDir)) {
+    try {
+      let filesInCacheDir = fs.readdirSync(imageCacheDir)
+        .filter(file => /\.(jpe?g|png|gif)$/i.test(file)) // Filtrar solo imágenes
+        .map(file => ({
+          name: file,
+          path: path.join(imageCacheDir, file), // Guardar la ruta completa para borrar y para el cache
+          time: fs.statSync(path.join(imageCacheDir, file)).mtime.getTime()
+        }))
+        .sort((a, b) => b.time - a.time); // Ordenar por fecha de modificación, más reciente primero
+
+      // Si hay más imágenes en el directorio que el tamaño de la caché, borrar las más antiguas
+      if (filesInCacheDir.length > IMAGES_CACHE_SIZE) {
+        const filesToDelete = filesInCacheDir.slice(IMAGES_CACHE_SIZE); // Todas excepto las IMAGES_CACHE_SIZE más recientes
+        filesToDelete.forEach(fileObj => {
+          try {
+            fs.unlinkSync(fileObj.path);
+            console.log(`[CACHE] Imagen antigua borrada de imageCacheDir: ${fileObj.name}`);
+          } catch (err) {
+            console.error(`[CACHE] Error al borrar imagen antigua ${fileObj.name} de imageCacheDir:`, err);
+          }
+        });
+        // Actualizar la lista de archivos después de borrar
+        filesInCacheDir = filesInCacheDir.slice(0, IMAGES_CACHE_SIZE);
+      }
+
+      // Poblar el array imagesCache en memoria con las imágenes restantes (las más recientes)
+      imagesCache = filesInCacheDir.map(fileObj => ({
+        filename: fileObj.name,
+        path: fileObj.path,
+        uploadDate: new Date(fileObj.time)
+      }));
+
+      if (imagesCache.length > 0) {
+        console.log(`[CACHE] imagesCache inicializado con ${imagesCache.length} imagen(es) de imageCacheDir.`);
+      } else {
+        console.log('[CACHE] No hay imágenes en imageCacheDir para inicializar imagesCache.');
+      }
+
+    } catch (err) {
+      console.error('[CACHE] Error al inicializar imagesCache desde el directorio:', err);
+      imagesCache = []; // Asegurar que la caché esté vacía en caso de error
+    }
+  } else {
+    console.log('[CACHE] El directorio imageCacheDir no existe. No se puede inicializar imagesCache.');
+    imagesCache = [];
+  }
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -316,31 +370,38 @@ const cacheUpload = multer({
   }
 });
 
+
+
 // Ruta para recibir imágenes JPG
 app.post('/api/images', cacheUpload.single('imagen'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No se recibió ninguna imagen JPG' });
   }
+  // El objeto que se pushea a imagesCache debe tener 'filename' y 'path'
+  // 'path' debe ser la ruta donde multer guarda el archivo temporalmente (en imageCacheDir)
   imagesCache.push({
-    filename: req.file.filename,
-    path: req.file.path,
+    filename: req.file.filename, // El nombre que le da multer (timestamp)
+    path: req.file.path,         // La ruta completa donde multer guardó el archivo en imageCacheDir
     uploadDate: new Date()
   });
 
   // Copiar la imagen a imagesDir (todas las imágenes recibidas)
   const outgoingPath = path.join(imagesDir, req.file.filename);
-  fs.copyFile(req.file.path, outgoingPath, (err) => {
+  fs.copyFile(req.file.path, outgoingPath, (err) => { // req.file.path es la fuente correcta
     if (err) {
       console.error('Error al copiar imagen a images:', err);
     }
   });
 
-  // Limitar tamaño de la caché y borrar archivos antiguos
+  // Limitar tamaño de la caché y borrar archivos antiguos de imageCacheDir
   while (imagesCache.length > IMAGES_CACHE_SIZE) {
     const removed = imagesCache.shift();
-    fs.unlink(removed.path, err => {
-      if (err) console.error('Error al borrar imagen de la caché:', err);
-    });
+    // removed.path es la ruta del archivo que se debe borrar de imageCacheDir
+    if (removed && removed.path && fs.existsSync(removed.path)) {
+      fs.unlink(removed.path, err => {
+        if (err) console.error(`[CACHE] Error al borrar imagen ${removed.filename} de imageCacheDir:`, err);
+      });
+    }
   }
 
   // CLOUDINARY UPLOAD
