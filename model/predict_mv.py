@@ -7,7 +7,7 @@ from PIL import Image
 import tensorflow as tf
 
 # === CONFIGURACIÓ ===
-IMAGE_FOLDER = '../tests/testImages/'
+IMAGE_FOLDER = '../tests/outgoingImages/'
 PROCESSED_FOLDER = '../tests/processedImages/'
 MODEL_PATH = 'leaf_patch_model.h5'  # Usa el nou format
 IMAGE_SIZE = (224, 224)  # Ha de coincidir amb el del model
@@ -52,26 +52,23 @@ def main():
         sys.exit(0)
 
     try:
-        print("Loading model...")
         model = load_model(MODEL_PATH, compile=False)
-        print("Model loaded.")
 
-        print(f"Preprocessing image: {latest_img}")
         img_array = center_crop_and_resize(latest_img)
-        print("Image preprocessed.")
 
         pred = model.predict(img_array)
-        pred_value = float(pred[0]) if isinstance(pred, (np.ndarray, list)) else float(pred)
-
+        pred_value = pred.item()
 
         move_to_processed(latest_img)
+        pred_value = float(pred[0][0]) if isinstance(pred, (np.ndarray, list)) else float(pred)
 
         if pred < 0.5:
-            write_prediction("unhealthy")
+            write_prediction(f"It looks like your crop is unhealthy, with a prediction of about {pred_value:.2f}")
             sys.exit(2)
         else:
-            write_prediction("healthy")
+            write_prediction(f"It looks like your crop is healthy, with a prediction of about {pred_value:.2f}")
             sys.exit(1)
+
     except Exception as e:
         write_prediction(f"error: {str(e)}")
         sys.exit(3)
