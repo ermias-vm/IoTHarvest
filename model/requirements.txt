@@ -1,2 +1,3 @@
-tensorflow matplotlib
+tensorflow
+matplotlib
 scikit-learn>=1.0.0

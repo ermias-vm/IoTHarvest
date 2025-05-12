@@ -6,3 +6,6 @@ dataset/
 # Archivos de data/
 backend/data/*
 !backend/data/README.md
+
+
+venv/

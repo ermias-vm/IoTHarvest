@@ -75,10 +75,18 @@ const cacheDir = path.join(dataDir, 'cache');
 const imageCacheDir = path.join(cacheDir, 'imageCache');
 const mailDir = path.join(dataDir, 'mail');
 
-[imagesDir, sensorsDir, cacheDir, imageCacheDir, mailDir].forEach(dir => {
+// Directorios para la clasificación de hojas
+const leafClassificationDir = path.join(dataDir, 'leaf_classification');
+const lcLastImageDir = path.join(leafClassificationDir, 'last_image');
+const lcLogsDir = path.join(leafClassificationDir, 'logs');
+const lcPredictedImagesDir = path.join(leafClassificationDir, 'predicted_images');
+
+[
+  imagesDir, sensorsDir, cacheDir, imageCacheDir, mailDir,
+  leafClassificationDir, lcLastImageDir, lcLogsDir, lcPredictedImagesDir
+].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
-
 
 // --- SENSORS CACHE Y SENSORS JSON ---
 const SENSOR_CACHE_SIZE = 14;
@@ -377,26 +385,37 @@ app.post('/api/images', cacheUpload.single('imagen'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No se recibió ninguna imagen JPG' });
   }
-  // El objeto que se pushea a imagesCache debe tener 'filename' y 'path'
-  // 'path' debe ser la ruta donde multer guarda el archivo temporalmente (en imageCacheDir)
+
   imagesCache.push({
-    filename: req.file.filename, // El nombre que le da multer (timestamp)
-    path: req.file.path,         // La ruta completa donde multer guardó el archivo en imageCacheDir
+    filename: req.file.filename,
+    path: req.file.path,
     uploadDate: new Date()
   });
 
-  // Copiar la imagen a imagesDir (todas las imágenes recibidas)
   const outgoingPath = path.join(imagesDir, req.file.filename);
-  fs.copyFile(req.file.path, outgoingPath, (err) => { // req.file.path es la fuente correcta
-    if (err) {
-      console.error('Error al copiar imagen a images:', err);
-    }
+  fs.copyFile(req.file.path, outgoingPath, (err) => {
+    if (err) console.error('Error al copiar imagen a images:', err);
   });
 
-  // Limitar tamaño de la caché y borrar archivos antiguos de imageCacheDir
+  // Ultima imagen para la predicción
+  const lastImageDestForPrediction = path.join(lcLastImageDir, req.file.filename);
+  // Copiar la imagen a lcLastImageDir
+  try {
+    // Borrar todos los archivos existentes en la carpeta lcLastImageDir
+    const filesInDir = fs.readdirSync(lcLastImageDir);
+    for (const file of filesInDir) {
+      fs.unlinkSync(path.join(lcLastImageDir, file));
+    }
+    
+    // Copiar la nueva imagen
+    fs.copyFileSync(req.file.path, lastImageDestForPrediction);
+    console.log(`[LEAF_CLASSIFICATION] Imagen copiada a ${lastImageDestForPrediction}. Las anteriores fueron eliminadas.`);
+  } catch (error) {
+    console.error('[LEAF_CLASSIFICATION] Error al procesar imagen para last_image:', error);
+  }
+
   while (imagesCache.length > IMAGES_CACHE_SIZE) {
     const removed = imagesCache.shift();
-    // removed.path es la ruta del archivo que se debe borrar de imageCacheDir
     if (removed && removed.path && fs.existsSync(removed.path)) {
       fs.unlink(removed.path, err => {
         if (err) console.error(`[CACHE] Error al borrar imagen ${removed.filename} de imageCacheDir:`, err);
@@ -404,31 +423,31 @@ app.post('/api/images', cacheUpload.single('imagen'), async (req, res) => {
     }
   }
 
-  // CLOUDINARY UPLOAD
-if (USE_CLOUDINARY) {
-  const now = Date.now();
-  if (now - lastCloudinaryUpload >= CLOUDINARY_COOLDOWN_SECONDS * 1000) {
-    try {
-      const publicId = req.file.filename.replace(/\.[^/.]+$/, ""); // quita extensión
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "IoTHarvestImages",
-        public_id: publicId, // <-- nombre igual que en local
-        overwrite: true
-      });
-      lastCloudinaryUpload = now;
-      console.log(`[CLOUDINARY] Imagen subida: ${result.secure_url}`);
-      return res.json({ 
-        message: 'Imagen recibida, guardada, cacheada y subida a Cloudinary', 
-        filename: req.file.filename, 
-        cloudinaryUrl: result.secure_url 
-      });
-    } catch (err) {
-      console.error('[CLOUDINARY] Error al subir imagen:', err);
+  if (USE_CLOUDINARY) {
+    const now = Date.now();
+    if (now - lastCloudinaryUpload >= CLOUDINARY_COOLDOWN_SECONDS * 1000) {
+      try {
+        const publicId = req.file.filename.replace(/\.[^/.]+$/, "");
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "IoTHarvestImages",
+          public_id: publicId,
+          overwrite: true
+        });
+        lastCloudinaryUpload = now;
+        console.log(`[CLOUDINARY] Imagen subida: ${result.secure_url}`);
+        return res.json({
+          message: 'Imagen recibida, guardada, cacheada y subida a Cloudinary',
+          filename: req.file.filename,
+          cloudinaryUrl: result.secure_url
+        });
+      } catch (err) {
+        console.error('[CLOUDINARY] Error al subir imagen:', err);
+        // Continuar para enviar respuesta incluso si Cloudinary falla
+      }
+    } else {
+      console.log('[CLOUDINARY] Cooldown activo, imagen solo guardada localmente.');
     }
-  } else {
-    console.log('[CLOUDINARY] Cooldown activo, imagen solo guardada localmente.');
   }
-}
   res.json({ message: 'Imagen recibida, guardada y cacheada', filename: req.file.filename });
 });
 
