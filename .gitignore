@@ -7,5 +7,6 @@ dataset/
 backend/data/*
 !backend/data/README.md
 
-
+watch_predict.log
+watch_predict.pid
 venv/

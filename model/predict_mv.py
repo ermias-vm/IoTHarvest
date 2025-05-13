@@ -2,78 +2,118 @@ import os
 import sys
 import shutil
 import numpy as np
+from datetime import datetime
 from tensorflow.keras.models import load_model
 from PIL import Image
 import tensorflow as tf
 
-# === CONFIGURACIÓ ===
-IMAGE_FOLDER = '../tests/outgoingImages/'
-PROCESSED_FOLDER = '../tests/processedImages/'
-MODEL_PATH = 'leaf_patch_model.h5'  # Usa el nou format
-IMAGE_SIZE = (224, 224)  # Ha de coincidir amb el del model
-OUTPUT_PATH = '../frontend/prediction.txt'  # Fitxer de sortida per la predicció
+# Rutas relativas al directorio 'model/'
+MODEL_PATH = 'leaf_patch_model.h5'
+IMAGE_SIZE = (224, 224)
 
-# === FUNCIONS ===
-def get_latest_image(folder):
-    files = [os.path.join(folder, f) for f in os.listdir(folder) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+# Rutas base para la clasificación de hojas (relativas al directorio del script)
+BASE_PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Sube dos niveles desde model/
+LEAF_CLASSIFICATION_DIR = os.path.join(BASE_PROJECT_DIR, "backend", "data", "leaf_classification")
+LAST_IMAGE_DIR = os.path.join(LEAF_CLASSIFICATION_DIR, "last_image")
+LAST_PREDICTION_FILE = os.path.join(LEAF_CLASSIFICATION_DIR, "last_prediction.txt")
+LOGS_DIR = os.path.join(LEAF_CLASSIFICATION_DIR, "logs")
+PREDICTED_IMAGES_DIR = os.path.join(LEAF_CLASSIFICATION_DIR, "predicted_images")
+
+def ensure_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)
+
+def get_latest_image_from_last_image_dir():
+    if not os.path.exists(LAST_IMAGE_DIR):
+        print(f"Directorio {LAST_IMAGE_DIR} no existe.", file=sys.stderr)
+        return None, None
+    
+    files = [f for f in os.listdir(LAST_IMAGE_DIR) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
     if not files:
-        return None
-    latest_file = max(files, key=os.path.getmtime)
-    return latest_file
+        return None, None
+    
+    image_filename = files[0] # O la lógica de ordenación que prefieras
+    return os.path.join(LAST_IMAGE_DIR, image_filename), image_filename
 
-def write_prediction(label):
-    with open(OUTPUT_PATH, "w") as f:
-        f.write(label)
 
 def center_crop_and_resize(img_path):
-    img = Image.open(img_path).convert('RGB')
-    width, height = img.size
-    # Retalla el quadrat central
-    min_dim = min(width, height)
-    left = (width - min_dim) // 4
-    top = (height - min_dim) // 4
-    img_cropped = img.crop((left, top, left + min_dim, top + min_dim))
-    img_resized = img_cropped.resize(IMAGE_SIZE)
-    img_array = tf.keras.utils.img_to_array(img_resized)
-    img_array = tf.expand_dims(img_array, 0)
-    img_array = img_array / 255.0
-    return img_array
+    try:
+        img = Image.open(img_path).convert('RGB')
+        width, height = img.size
+        min_dim = min(width, height)
+        left = (width - min_dim) / 2
+        top = (height - min_dim) / 2
+        right = (width + min_dim) / 2
+        bottom = (height + min_dim) / 2
+        img_cropped = img.crop((left, top, right, bottom))
+        img_resized = img_cropped.resize(IMAGE_SIZE)
+        img_array = tf.keras.utils.img_to_array(img_resized)
+        img_array = tf.expand_dims(img_array, 0)
+        img_array = img_array / 255.0
+        return img_array
+    except Exception as e:
+        print(f"Error en center_crop_and_resize para {img_path}: {e}", file=sys.stderr)
+        raise
 
-def move_to_processed(img_path):
-    if not os.path.exists(PROCESSED_FOLDER):
-        os.makedirs(PROCESSED_FOLDER)
-    shutil.move(img_path, os.path.join(PROCESSED_FOLDER, os.path.basename(img_path)))
-
-# === MAIN ===
 def main():
-    latest_img = get_latest_image(IMAGE_FOLDER)
-    if latest_img is None:
-        print("No hi ha imatges noves per processar.") ##ELIMINAR EN CODI SERVER
-        sys.exit(0)
+    ensure_dir(LOGS_DIR)
+    ensure_dir(PREDICTED_IMAGES_DIR)
+
+    image_to_predict_path, base_image_filename = get_latest_image_from_last_image_dir()
+
+    if not image_to_predict_path:
+        print("No hay imagen en 'last_image' para procesar.")
+        # Opcionalmente, escribir "No image" en last_prediction.txt
+        # with open(LAST_PREDICTION_FILE, "w") as f:
+        #     f.write("No image available for prediction")
+        sys.exit(0) # Salir limpiamente si no hay imagen
+
+    filename_without_ext = os.path.splitext(base_image_filename)[0]
+    log_file_path = os.path.join(LOGS_DIR, f"{filename_without_ext}.txt")
+    predicted_image_dest_path = os.path.join(PREDICTED_IMAGES_DIR, base_image_filename)
+    
+    current_time_for_log = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
-        model = load_model(MODEL_PATH, compile=False)
+        model_full_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), MODEL_PATH)
+        if not os.path.exists(model_full_path):
+            error_msg = f"Error: El modelo no existe en {model_full_path}"
+            with open(LAST_PREDICTION_FILE, "w") as f: f.write(error_msg)
+            with open(log_file_path, "w") as f: f.write(f"{current_time_for_log} {error_msg}\n")
+            print(error_msg, file=sys.stderr)
+            sys.exit(3)
 
-        img_array = center_crop_and_resize(latest_img)
-
+        model = load_model(model_full_path, compile=False)
+        img_array = center_crop_and_resize(image_to_predict_path)
+        
         pred = model.predict(img_array)
-        pred_value = pred.item()
+        pred_value = float(pred[0][0]) if isinstance(pred, (np.ndarray, list)) and pred.ndim > 1 else float(pred[0])
 
-        move_to_processed(latest_img)
-        pred_value = float(pred[0][0]) if isinstance(pred, (np.ndarray, list)) else float(pred)
+        shutil.copy(image_to_predict_path, predicted_image_dest_path)
 
-        if pred < 0.5:
-            write_prediction(f"It looks like your crop is unhealthy, with a prediction of about {pred_value:.2f}")
-            sys.exit(2)
+        if pred_value < 0.5:
+            result = f"It looks like your crop is unhealthy, with a prediction of about {pred_value:.2f}"
+            exit_code = 2
         else:
-            write_prediction(f"It looks like your crop is healthy, with a prediction of about {pred_value:.2f}")
-            sys.exit(1)
+            result = f"It looks like your crop is healthy, with a prediction of about {pred_value:.2f}"
+            exit_code = 1
+        
+        with open(LAST_PREDICTION_FILE, "w") as f:
+            f.write(result)
+        
+        with open(log_file_path, "w") as f:
+            f.write(f"{current_time_for_log} {result} (Imagen: {base_image_filename})\n")
+        
+        print(f"Predicción: {result} para {base_image_filename}")
+        sys.exit(exit_code)
 
     except Exception as e:
-        write_prediction(f"error: {str(e)}")
-        sys.exit(3)
-    except Exception as e:
-        print(f"Error: {e}")
+        error_msg = f"error: {str(e)}"
+        with open(LAST_PREDICTION_FILE, "w") as f:
+            f.write(error_msg)
+        with open(log_file_path, "w") as f:
+            f.write(f"{current_time_for_log} {error_msg} (Imagen: {base_image_filename})\n")
+        print(f"Error durante la predicción para {base_image_filename}: {e}", file=sys.stderr)
         sys.exit(3)
 
 if __name__ == '__main__':

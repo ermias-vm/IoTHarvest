@@ -80,6 +80,7 @@ const leafClassificationDir = path.join(dataDir, 'leaf_classification');
 const lcLastImageDir = path.join(leafClassificationDir, 'last_image');
 const lcLogsDir = path.join(leafClassificationDir, 'logs');
 const lcPredictedImagesDir = path.join(leafClassificationDir, 'predicted_images');
+const lcLastPredictionFile = path.join(leafClassificationDir, 'last_prediction.txt');
 
 [
   imagesDir, sensorsDir, cacheDir, imageCacheDir, mailDir,
@@ -87,6 +88,15 @@ const lcPredictedImagesDir = path.join(leafClassificationDir, 'predicted_images'
 ].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
+
+if (!fs.existsSync(lcLastPredictionFile)) {
+  try {
+    fs.writeFileSync(lcLastPredictionFile, 'No prediction available yet.');
+    console.log(`[INIT] Archivo ${lcLastPredictionFile} creado con contenido inicial.`);
+  } catch (err) {
+    console.error(`[INIT] Error al crear ${lcLastPredictionFile}:`, err);
+  }
+}
 
 // --- SENSORS CACHE Y SENSORS JSON ---
 const SENSOR_CACHE_SIZE = 14;
@@ -653,7 +663,7 @@ app.get('/api/sensors/json/:date', (req, res) => {
 
 // Endpoint para servir el contenido de prediction.txt
 app.get('/api/prediction', (req, res) => {
-  const predictionPath = path.join(__dirname, '../frontend/prediction.txt');
+  const predictionPath = path.join(__dirname, '/data/leaf_classification/last_prediction.txt');
   fs.readFile(predictionPath, 'utf8', (err, data) => {
     if (err) {
       console.error('[PREDICTION] Error al leer prediction.txt:', err);
