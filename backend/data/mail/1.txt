@@ -1,0 +1,10 @@
+Hola,
+
+Queremos informarte que hemos detectado una temperatura superior a 38 °C en tu cultivo 📍.
+
+Este nivel de calor puede afectar el desarrollo de tus plantas 🌱, especialmente si se mantiene por varias horas. Te recomendamos 
+revisar los sistemas de riego y ventilación, y considerar medidas de protección como sombreado temporal ☀️🛑.
+
+Desde IoT Harvest seguimos monitoreando tu cultivo en tiempo real y te mantendremos informado ante cualquier nuevo evento.
+
+🌿 IoT Harvest — Tecnología que cultiva contigo.

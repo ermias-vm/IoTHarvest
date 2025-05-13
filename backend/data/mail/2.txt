@@ -1,0 +1,9 @@
+Hola,
+
+Queremos informarte que hemos detectado niveles de humedad en suelo por debajo del umbral recomendado en tu cultivo 📍.
+
+La falta de humedad puede comprometer la absorción de nutrientes y afectar directamente la salud de tus plantas 🌱. Te sugerimos verificar el sistema de riego y considerar un riego complementario lo antes posible 💧⚠️.
+
+Desde IoT Harvest seguimos monitoreando tu cultivo en tiempo real y te mantendremos informado ante cualquier nuevo evento.
+
+🌿 IoT Harvest — Tecnología que cultiva contigo.

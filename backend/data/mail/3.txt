@@ -1,0 +1,13 @@
+Hola,
+
+Queremos informarte que hemos detectado dos condiciones críticas en tu cultivo 📍:
+
+🔥 Temperatura superior a 38 °C
+💧 Humedad en suelo por debajo del nivel recomendado
+
+Estas condiciones pueden provocar estrés hídrico en las plantas 🌱, dificultando su crecimiento y aumentando el riesgo de daños por calor. Te recomendamos revisar urgentemente el sistema de riego, asegurar una buena hidratación y, si es posible, aplicar medidas de sombreado ☀️🚿.
+
+Desde IoT Harvest seguimos monitoreando tu cultivo en tiempo real y te mantendremos informado ante cualquier nuevo evento.
+
+🌿 IoT Harvest — Tecnología que cultiva contigo.
+

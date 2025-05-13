@@ -6,7 +6,7 @@ dataset/
 # Archivos de data/
 backend/data/*
 !backend/data/README.md
-
+!backend/data/mail
 watch_predict.log
 watch_predict.pid
 venv/

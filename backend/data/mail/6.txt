@@ -1,0 +1,12 @@
+Hola,
+
+Queremos informarte que hemos detectado dos condiciones importantes en tu cultivo 📍:
+
+💧 Humedad en el suelo por debajo del nivel recomendado, lo que puede afectar la absorción de nutrientes y el desarrollo saludable de las plantas.
+🔋 Nivel bajo de batería en el sistema de monitoreo, lo que podría interrumpir el envío de datos en tiempo real.
+
+Te sugerimos verificar y activar el riego cuanto antes, y realizar el cambio de baterías para mantener el monitoreo activo y preciso 🔧💦.
+
+Desde IoT Harvest seguimos atentos al estado de tu cultivo y te avisaremos ante cualquier nuevo evento.
+
+🌿 IoT Harvest — Tecnología que cultiva contigo.
