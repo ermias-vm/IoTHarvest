@@ -1,0 +1,47 @@
+services:
+  backend:
+    image: iotharvest-backend:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: iotharvest-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../backend/data:/app/backend/data
+    env_file:
+      - ./.env
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_SCRIPT_PASS=${ADMIN_SCRIPT_PASS}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_PASS=${MAIL_PASS}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+
+  frontend:
+    image: iotharvest-frontend:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
+    container_name: iotharvest-frontend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - backend
+
+  model:
+    image: iotharvest-model:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.model
+    container_name: iotharvest-model
+    volumes:
+      - ../backend/data:/app/backend/data
+    restart: unless-stopped
+    depends_on:
+      - backend

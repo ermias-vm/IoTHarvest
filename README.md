@@ -11,8 +11,8 @@ Además, se implementarán alertas automáticas sobre el estado de los cultivos 
 
 ## 📑 Enlaces a los Archivos de Configuración
 
-- [Configuración del Servidor](./backend/SERVER_CONFIG.md): Aquí puedes encontrar toda la configuración necesaria para el servidor que gestiona los datos de los sensores y las imágenes.
+- [Configuración del Servidor](./backend/SERVER-CONFIG.md): Aquí puedes encontrar toda la configuración necesaria para el servidor que gestiona los datos de los sensores y las imágenes.
 <br><br>
-- [Configuración de MongoDB](./backend/MONGODB_CONFIG.md): En este archivo se explica cómo instalar y configurar MongoDB para el almacenamiento de los datos.
+- [Configuración de MongoDB](./backend/MONGODB-CONFIG.md): En este archivo se explica cómo instalar y configurar MongoDB para el almacenamiento de los datos.
 <br><br>
-- [Configuración del Frontend](./frontend/FRONTEND_CONFIG.md): Aquí se describen las dependencias y como de visualizar la página web.
+- [Configuración del Frontend](./frontend/FRONTEND-CONFIG.md): Aquí se describen las dependencias y como de visualizar la página web.

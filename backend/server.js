@@ -83,7 +83,7 @@ const lcPredictedImagesDir = path.join(leafClassificationDir, 'predicted_images'
 const lcLastPredictionFile = path.join(leafClassificationDir, 'last_prediction.txt');
 
 [
-  imagesDir, sensorsDir, cacheDir, imageCacheDir, mailDir,
+  imagesDir, sensorsDir, cacheDir, imageCacheDir,
   leafClassificationDir, lcLastImageDir, lcLogsDir, lcPredictedImagesDir
 ].forEach(dir => {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });

@@ -1,32 +1,51 @@
 #!/bin/bash
-# filepath: start_server.sh
+# filepath: server.sh
 # 
 # USO DEL SCRIPT:
-#   ./start_server.sh                # (por defecto) pull y arranca backend y frontend (frontend solo localhost)
-#   ./start_server.sh expose         # pull y arranca backend y frontend (frontend expuesto en red)
-#   ./start_server.sh --frontend     # pull y arranca solo frontend (solo localhost)
-#   ./start_server.sh --frontend expose # pull y arranca solo frontend (expuesto en red)
-#   ./start_server.sh --backend      # pull y arranca solo backend
-#   ./start_server.sh --reset        # para todo, pull y arranca backend y frontend
-#   ./start_server.sh --test         # arranca backend y frontend SIN pull previo
-#   ./start_server.sh --stop         # para backend y frontend si están ejecutándose
+#   ./server.sh                # Pull y arranca backend y frontend (frontend según .env)
+#   ./server.sh --frontend     # Pull y arranca solo frontend (según .env)
+#   ./server.sh --backend      # Pull y arranca solo backend
+#   ./server.sh --reset        # Para todo, pull y arranca backend y frontend
+#   ./server.sh --test         # Arranca backend y frontend SIN pull previo
+#   ./server.sh --stop         # Para backend y frontend si están ejecutándose
 
 BACKEND_DIR="./backend"
 FRONTEND_DIR="./frontend/my-app"
-WATCH_PREDICT_SCRIPT="./watch_predict.sh"
-WATCH_PREDICT_PID_FILE="./watch_predict.pid"
-WATCH_PREDICT_LOG_FILE="./watch_predict.log" # Para referencia del usuario
+ENV_FILE="./backend/.env"
+WATCH_PREDICT_SCRIPT="./watch-predict.sh"
+WATCH_PREDICT_PID_FILE="./watch-predict.pid"
+WATCH_PREDICT_LOG_FILE="./watch-predict.log"
 
 BACKEND_PID=""
 FRONTEND_PID=""
-# WATCH_PREDICT_PID no se almacena aquí, se lee del archivo PID
+function get_expose_frontend_flag() {
+  # Si no existe el archivo de entorno, asumimos false
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "false"
+    return
+  fi
 
-# Función para iniciar el script de vigilancia y predicción
+  # Intentar leer la línea EXPOSE=; si falla o no hay coincidencias, devolvemos false
+  if ! expose_line=$(grep -E '^EXPOSE=' "$ENV_FILE"); then
+    echo "false"
+    return
+  fi
+
+  # Extraer valor, normalizar a minúsculas y comprobar si es "true"
+  local expose=$(echo "$expose_line" | tail -n1 | cut -d'=' -f2- | tr -d '\r\n' | tr '[:upper:]' '[:lower:]')
+  if [ "$expose" == "true" ]; then
+    echo "true"
+    return
+  fi
+
+  echo "false"
+}
+
 function start_watch_predict() {
   if [ -f "$WATCH_PREDICT_PID_FILE" ]; then
     EXISTING_PID=$(cat "$WATCH_PREDICT_PID_FILE")
     if ps -p "$EXISTING_PID" > /dev/null; then
-      echo "[INFO] El script watch_predict.sh ya está en ejecución (PID: $EXISTING_PID)."
+      echo "[INFO] El script watch-predict.sh ya está en ejecución (PID: $EXISTING_PID)."
       return 0
     else
       echo "[WARN] Se encontró un archivo PID ($WATCH_PREDICT_PID_FILE) pero el proceso no existe. Eliminando archivo PID."
@@ -53,31 +72,30 @@ function start_watch_predict() {
   return 0
 }
 
-# Función para detener el script de vigilancia y predicción
 function stop_watch_predict() {
-  echo "[INFO] Intentando detener watch_predict.sh..."
+  echo "[INFO] Intentando detener watch-predict.sh..."
   if [ -f "$WATCH_PREDICT_PID_FILE" ]; then
     PID_TO_KILL=$(cat "$WATCH_PREDICT_PID_FILE")
     if ps -p "$PID_TO_KILL" > /dev/null; then
-      echo "[INFO] Deteniendo watch_predict.sh (PID: $PID_TO_KILL)..."
+      echo "[INFO] Deteniendo watch-predict.sh (PID: $PID_TO_KILL)..."
       kill "$PID_TO_KILL"
       sleep 2
       if ps -p "$PID_TO_KILL" > /dev/null; then
-         echo "[WARN] No se pudo detener watch_predict.sh (PID: $PID_TO_KILL) con kill normal. Intentando kill -9..."
+         echo "[WARN] No se pudo detener watch-predict.sh (PID: $PID_TO_KILL) con kill normal. Intentando kill -9..."
          kill -9 "$PID_TO_KILL"
          sleep 1
       fi
       if ps -p "$PID_TO_KILL" > /dev/null; then
-        echo "[ERROR] No se pudo detener el proceso watch_predict.sh (PID: $PID_TO_KILL) incluso con kill -9."
+        echo "[ERROR] No se pudo detener el proceso watch-predict.sh (PID: $PID_TO_KILL) incluso con kill -9."
       else
-        echo "[INFO] watch_predict.sh (PID: $PID_TO_KILL) detenido."
+        echo "[INFO] watch-predict.sh (PID: $PID_TO_KILL) detenido."
       fi
     else
-      echo "[INFO] El proceso de watch_predict.sh (PID: $PID_TO_KILL según el archivo PID) no estaba en ejecución."
+      echo "[INFO] El proceso de watch-predict.sh (PID: $PID_TO_KILL según el archivo PID) no estaba en ejecución."
     fi
     rm -f "$WATCH_PREDICT_PID_FILE"
   else
-    echo "[INFO] No se encontró el archivo PID para watch_predict.sh. No se puede detener selectivamente."
+    echo "[INFO] No se encontró el archivo PID para watch-predict.sh. No se puede detener selectivamente."
     PIDS_WATCH=$(pgrep -f "$WATCH_PREDICT_SCRIPT")
     if [ -n "$PIDS_WATCH" ]; then
         echo "[WARN] No hay archivo PID, pero se encontraron procesos que coinciden con $WATCH_PREDICT_SCRIPT. Intentando detenerlos..."
@@ -102,10 +120,10 @@ function start_backend() {
 }
 
 function start_frontend() {
-  local expose_flag="$1"
+  local expose_flag=$(get_expose_frontend_flag)
   echo "[INFO] Iniciando frontend..."
   cd "$FRONTEND_DIR" || { echo "[ERROR] No se pudo cambiar al directorio $FRONTEND_DIR"; exit 1; }
-  if [ "$expose_flag" == "expose" ]; then
+  if [ "$expose_flag" == "true" ]; then
     echo "[INFO] Frontend expuesto en red (--host activado)"
     npm run dev -- --host &
   else
@@ -159,9 +177,8 @@ function do_pull() {
 }
 
 function start_both() {
-  local expose_flag="$1"
   start_backend
-  start_frontend "$expose_flag"
+  start_frontend
 }
 
 trap 'echo "[INFO] Interrupción recibida (Ctrl+C), deteniendo todos los servicios..."; stop_all; exit 0' SIGINT SIGTERM
@@ -169,26 +186,26 @@ trap 'echo "[INFO] Interrupción recibida (Ctrl+C), deteniendo todos los servici
 case "$1" in
   --frontend)
     do_pull
-    start_frontend "$2"
+    start_frontend
     echo "[INFO] Frontend iniciado. Este script terminará, pero el frontend seguirá en segundo plano."
-    echo "[INFO] Para detenerlo, usa './start_server.sh --stop' o Ctrl+C si se ejecuta en primer plano."
+    echo "[INFO] Para detenerlo, usa './server.sh --stop' o Ctrl+C si se ejecuta en primer plano."
     ;;
   --backend)
     do_pull
     start_backend
-    echo "[INFO] Backend y watch_predict iniciados. Este script terminará, pero seguirán en segundo plano."
-    echo "[INFO] Para detenerlos, usa './start_server.sh --stop' o Ctrl+C si se ejecuta en primer plano."
+    echo "[INFO] Backend y watch-predict iniciados. Este script terminará, pero seguirán en segundo plano."
+    echo "[INFO] Para detenerlos, usa './server.sh --stop' o Ctrl+C si se ejecuta en primer plano."
     ;;
   --reset)
     echo "[INFO] Reiniciando servicios..."
     stop_all
     do_pull
-    start_both "$2"
+    start_both
     echo "[INFO] Servidores reiniciados y corriendo en segundo plano."
     ;;
   --test)
     echo "[INFO] Iniciando servicios en modo test (sin git pull)..."
-    start_both "$2"
+    start_both
     echo "[INFO] Servidores iniciados en modo test y corriendo en segundo plano."
     ;;
   --stop)
@@ -196,7 +213,7 @@ case "$1" in
     ;;
   *)
     do_pull
-    start_both "$1"
+    start_both
     echo "[INFO] Servidores iniciados y corriendo en segundo plano."
     ;;
 esac

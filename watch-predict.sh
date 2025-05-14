@@ -1,10 +1,10 @@
 #!/bin/bash
-# watch_predict.sh (Versión Simplificada)
+# watch-predict.sh (Versión Simplificada)
 # Vigila la carpeta de imágenes y ejecuta el script de predicción usando el venv.
 
 # Rutas relativas a la raíz del proyecto (donde se espera que esté este script)
 TARGET_DIR_RELATIVE="backend/data/leaf_classification/last_image"
-PREDICT_SCRIPT_RELATIVE="model/predict_mv.py"
+PREDICT_SCRIPT_RELATIVE="model/predict-mv.py"
 VENV_DIR_RELATIVE="model/venv"
 
 # Obtener la ruta absoluta del directorio donde se encuentra este script (raíz del proyecto)
@@ -60,7 +60,7 @@ while true; do
         echo "[ACTION] $(date): Ejecutando: $PYTHON_CMD_IN_VENV $PREDICT_SCRIPT_FULL_PATH"
         
         # Ejecutar el script de predicción.
-        # La salida del script de Python irá a donde esté configurada la salida de watch_predict.sh
+        # La salida del script de Python irá a donde esté configurada la salida de watch-predict.sh
         # (stdout/stderr de la terminal si se ejecuta directamente, o al log si start_server.sh lo redirige).
         "$PYTHON_CMD_IN_VENV" "$PREDICT_SCRIPT_FULL_PATH"
         

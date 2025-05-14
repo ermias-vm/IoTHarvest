@@ -1,0 +1,27 @@
+FROM node:18-slim
+
+WORKDIR /app/frontend
+
+# Copiar package.json e instalar dependencias
+COPY frontend/my-app/package*.json ./
+RUN npm install
+
+# Copiar todos los archivos del frontend
+COPY frontend/my-app/ ./
+
+# Instalar tipos de Node.js para solucionar errores TS
+RUN npm install --save-dev @types/node
+
+# Corregir error de React no utilizado en main.tsx
+RUN sed -i 's/import React from/import React, { createElement } from/g' src/main.tsx || true
+
+# Build the frontend
+RUN npm run build || (cat $(find . -name "*.ts*" | xargs grep -l "process" | head -n 1) && exit 1)
+
+# Install a simple http server for serving static content
+RUN npm install -g serve
+
+# Expose the frontend port
+EXPOSE 8081
+
+CMD ["serve", "-s", "dist", "-l", "8081"]

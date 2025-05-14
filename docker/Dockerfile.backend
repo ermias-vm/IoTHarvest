@@ -1,0 +1,24 @@
+FROM node:18-slim
+
+WORKDIR /app/backend
+
+# Instalar dependencias
+COPY backend/package*.json ./
+RUN npm install
+
+# Copiar archivos del backend
+COPY backend/ ./
+
+# Crear directorios necesarios para la estructura de datos
+RUN mkdir -p data/leaf_classification/last_image \
+    && mkdir -p data/leaf_classification/logs \
+    && mkdir -p data/leaf_classification/predicted_images \
+    && mkdir -p data/cache/imageCache \
+    && mkdir -p data/images \
+    && mkdir -p data/mail \
+    && mkdir -p data/sensors
+
+# Expose the backend port
+EXPOSE 8080
+
+CMD ["node", "server.js"]

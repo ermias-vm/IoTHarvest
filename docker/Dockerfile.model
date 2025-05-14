@@ -1,0 +1,28 @@
+FROM python:3.10-slim
+
+WORKDIR /app/model
+
+# Instalar dependencias del sistema necesarias para TensorFlow
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    inotify-tools \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar requirements.txt primero para mejor uso de caché
+COPY model/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar archivos del modelo
+COPY model/leaf_patch_model.h5 ./
+COPY docker/predict-mv-docker.py ./predict-mv.py
+
+# Create necessary directories
+RUN mkdir -p /app/backend/data/leaf_classification/last_image \
+    && mkdir -p /app/backend/data/leaf_classification/logs \
+    && mkdir -p /app/backend/data/leaf_classification/predicted_images
+
+# Copy the Docker-specific watch script
+COPY docker/watch-predict-docker.sh /app/watch-predict.sh
+RUN chmod +x /app/watch-predict.sh
+
+CMD ["bash", "/app/watch-predict.sh"]
