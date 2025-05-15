@@ -47,7 +47,26 @@ const sensorSchema = new mongoose.Schema({
   isTestData: { type: Boolean, default: false }
 }, { collection: 'sensorsData' });
 
-const Sensor = mongoose.model('Sensor', sensorSchema);
+
+const sensorSchemaOptimized = new mongoose.Schema(
+  {
+    temperatura: { type: Number, required: true },
+    humedad_aire: { type: Number, required: true },
+    humedad_suelo: { type: Number, required: true },
+    status: { type: Number, required: true },
+    timeServer: { type: Date, default: Date.now },
+  },
+  {
+    timeseries: {
+      timeField: 'timeServer',
+      metaField: null,
+      granularity: 'minutes'
+    },
+    collection: 'sensorsDataOptimized'
+  }
+);
+
+const Sensor = mongoose.model('Sensor', sensorSchemaOptimized);
 
 // Conexión a MongoDB
 mongoose.connect(USED_DB, {
