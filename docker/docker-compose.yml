@@ -1,12 +1,33 @@
 services:
+  nginx:
+    image: iotharvest-nginx:latest
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nginx
+    container_name: iotharvest-nginx
+    ports:
+      - "80:80"      # Puerto HTTP expuesto al exterior
+      # - "443:443"  # Puerto HTTPS (descomenta si usas SSL)
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # - ./ssl:/etc/nginx/ssl:ro  # Descomenta si usas SSL
+      - nginx_logs:/var/log/nginx
+
   backend:
     image: iotharvest-backend:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile.backend
     container_name: iotharvest-backend
-    ports:
-      - "8080:8080"
+    # Ya no exponemos puertos al exterior directamente
+    # ports:
+    #   - "8080:8080"
+    expose:
+      - "8080"  # Solo expuesto internamente a otros contenedores
     volumes:
       - ../backend/data:/app/backend/data
     env_file:
@@ -29,8 +50,11 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.frontend
     container_name: iotharvest-frontend
-    ports:
-      - "8081:8081"
+    # Ya no exponemos puertos al exterior directamente
+    # ports:
+    #   - "8081:8081"
+    expose:
+      - "8081"  # Solo expuesto internamente a otros contenedores
     depends_on:
       - backend
 
@@ -45,3 +69,6 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+
+volumes:
+  nginx_logs:
