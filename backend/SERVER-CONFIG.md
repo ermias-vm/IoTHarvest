@@ -10,7 +10,38 @@ Ejecuta el siguiente comando para instalar Node.js y npm:
 sudo apt install -y nodejs npm
 ```
 
-### 🔹 Instalación de Dependencias
+### 🔹 Configuración del Entorno Python para el Modelo de IA
+El proyecto incluye un modelo de machine learning para clasificación de hojas que requiere Python. Para configurar el entorno necesario:
+
+#### Instalación de herramientas del sistema
+```sh
+# Actualizar la lista de paquetes del sistema
+sudo apt update
+
+# Instalar inotify-tools (necesario para monitorear cambios en archivos)
+sudo apt install inotify-tools
+
+# Instalar Python pip y herramientas de entorno virtual
+sudo apt install python3-pip python3-venv -y
+```
+
+#### Configuración del entorno virtual Python
+```sh
+# Navegar al directorio del modelo
+cd model/
+
+# Crear un entorno virtual de Python
+python3 -m venv venv
+
+# Activar el entorno virtual
+source venv/bin/activate
+
+# Instalar las dependencias del modelo desde requirements.txt
+pip install -r requirements.txt
+```
+
+
+### 🔹 Instalación de Dependencias del Backend
 
 #### Caso 1: Ya tienes package.json y package-lock.json
 Desde la carpeta raíz del proyecto, accede al directorio `backend` e instala las dependencias ya definidas:

@@ -7,7 +7,6 @@
 # ./docker.sh build - Reconstruye las imágenes de los contenedores
 # ./docker.sh build-verbose - Reconstruye con salida detallada del proceso
 # ./docker.sh logs - Muestra los logs de todos los servicios en tiempo real
-# ./docker.sh nginx - Muestra los logs del servidor Nginx
 # ./docker.sh backend - Muestra los logs del servicio backend
 # ./docker.sh frontend - Muestra los logs del servicio frontend
 # ./docker.sh model - Muestra los logs del servicio model
@@ -46,7 +45,6 @@ function show_help() {
   echo -e "  ${GREEN}rm-containers${NC}  Elimina todos los contenedores relacionados con IoTHarvest"
   echo -e "  ${GREEN}rm-images${NC}      Elimina todas las imágenes de IoTHarvest"
   echo -e "  ${GREEN}logs${NC}           Muestra los logs de todos los servicios"
-  echo -e "  ${GREEN}nginx${NC}          Muestra los logs del servidor nginx"
   echo -e "  ${GREEN}backend${NC}        Muestra los logs del backend"
   echo -e "  ${GREEN}frontend${NC}       Muestra los logs del frontend"
   echo -e "  ${GREEN}model${NC}          Muestra los logs del servicio model"
@@ -133,11 +131,10 @@ case "$1" in
     PUBLIC_IP=$(curl -s https://api.ipify.org || echo "localhost")
     
     echo -e "\n${GREEN}¡IoTHarvest está disponible!${NC}"
-    echo -e "${YELLOW}Usando el servidor Nginx, ahora puedes acceder al frontend desde:${NC}"
-    echo -e "  • ${CYAN}Local:${NC} http://localhost"
-    echo -e "  • ${CYAN}Red:${NC} http://$PUBLIC_IP"
-    echo -e "${YELLOW}El acceso directo a los servicios individuales ya no está habilitado${NC}"
-    echo -e "${YELLOW}Todo el tráfico ahora pasa por Nginx para mayor seguridad.${NC}"
+    echo -e "${YELLOW}Acceso a los servicios:${NC}"
+    echo -e "  • ${CYAN}Frontend:${NC} http://localhost:8081 o http://$PUBLIC_IP:8081"
+    echo -e "  • ${CYAN}Backend API:${NC} http://localhost:8080 o http://$PUBLIC_IP:8080"
+    echo -e "${GREEN}¡Servicios listos para usar!${NC}"
     ;;
   stop)
     echo -e "${YELLOW}Deteniendo servicios IoTHarvest...${NC}"
@@ -181,10 +178,6 @@ case "$1" in
   model)
     echo -e "${CYAN}Mostrando logs del servicio model (Ctrl+C para salir):${NC}"
     docker compose -f ${DOCKER_DIR}/docker-compose.yml logs -f model
-    ;;
-  nginx)
-    echo -e "${CYAN}Mostrando logs del servidor nginx (Ctrl+C para salir):${NC}"
-    docker compose -f ${DOCKER_DIR}/docker-compose.yml logs -f nginx
     ;;
   status)
     echo -e "${CYAN}Estado de los servicios:${NC}"
