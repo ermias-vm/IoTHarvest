@@ -88,6 +88,7 @@ db.sensorsData.find()
 
 ---
 
-### 9 **Ahora ya puedes configurar el servidor en [SERVER_CONFIG.md](./SERVER_CONFIG.md).**
+### 9. **Ahora ya puedes configurar el servidor**
+Continúa con la configuración del servidor en [SERVER-CONFIG.md](./SERVER-CONFIG.md). Busca la sección **"⚙️ Configuración del Modo de Conexión"** para configurar el modo de base de datos (Local o Cluster).
 
 

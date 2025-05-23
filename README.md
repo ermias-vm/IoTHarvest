@@ -96,12 +96,16 @@ Desarrollar una plataforma completa que permita a los agricultores optimizar el 
 - [Configuración de MongoDB](./backend/MONGODB-CONFIG.md): En este archivo se explica cómo instalar y configurar MongoDB para el almacenamiento de los datos.
 <br><br>
 - [Configuración del Frontend](./frontend/FRONTEND-CONFIG.md): Aquí se describen las dependencias y como de visualizar la página web.
+<br><br>
+- [Configuración de Docker](./docker/README.md): Documentación completa sobre la containerización del proyecto, instalación de Docker y orquestación de servicios.
 
 ---
 
 ## 🚀 Guía de Inicio Rápido
 
 - [Scripts de Inicio y Gestión](./START-SCRIPTS.md): Guía completa para ejecutar y gestionar el proyecto con scripts automatizados.
+<br><br>
+- [Scripts de Pruebas y Configuración](./scripts/SCRIPTS-CONFIG.md): Scripts utilitarios para pruebas, envío de datos y gestión del sistema.
 
 ---
 

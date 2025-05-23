@@ -59,7 +59,7 @@ npm install express mongoose dotenv multer bcrypt jsonwebtoken nodemailer cors c
 ```
 
 ### 🔹 Configuración de MongoDB
-Asegúrate de tener MongoDB instalado y configurado. Consulta la guía detallada en [MONGODB_CONFIG.md](./MONGODB_CONFIG.md).<br><br><br>
+Asegúrate de tener MongoDB instalado y configurado. Consulta la guía detallada en [MONGODB-CONFIG.md](./MONGODB-CONFIG.md).<br><br><br>
 
 ---
 
@@ -96,36 +96,5 @@ donde `XXXX` indicará si la conexión se ha realizado en **modo LOCAL** o **mod
 
 ---
 
-## 📤 Enviar Datos de Prueba
-
-Para enviar datos de prueba al servidor y almacenarlos, ejecuta el script de envío siguiendo las instrucciones disponibles en [ENVIAR_DATOS_PRUEBA.md](../scripts/ENVIAR_DATOS_PRUEBA.md).
-
----
-
-## 🖥️ Acceso a los Endpoints
-
-### Últimos Datos Almacenados en Caché
-- **Endpoint:** `/api/sensores/ultimo`  
-- **Método:** GET  
-- **Descripción:** Devuelve el último conjunto de datos recibido y almacenado en caché.
-```sh
-curl -X GET http://localhost:8080/api/sensores/ultimo
-```
-
-### Últimos X Datos
-- **Endpoint:** `/api/sensores/ultimos/:cantidad`  
-- **Método:** GET  
-- **Descripción:** Devuelve los últimos X registros almacenados en la base de datos.
-```sh
-curl -X GET http://localhost:8080/api/sensores/ultimos/5
-```
-
-### Todos los Datos Almacenados
-- **Endpoint:** `/api/sensores`  
-- **Método:** GET  
-- **Descripción:** Devuelve todos los datos almacenados en la base de datos.
-```sh
-curl -X GET http://localhost:8080/api/sensores
-```
 
 ✅ ¡El servidor ya está listo para funcionar! 🎯
