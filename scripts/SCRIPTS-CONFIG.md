@@ -76,17 +76,22 @@ chmod +x *.sh
 ```
 
 #### `enviarImagenes.sh` - Envío de Imágenes de Prueba
-**Descripción:** Envía imágenes desde el directorio de pruebas al servidor.
+**Descripción:** Envía imágenes desde el directorio de pruebas o una imagen específica al servidor.
 
 **Parámetros:**
 - `NUM_IMAGENES`: Número de imágenes a enviar (defecto: 1)
 - `INTERVALO`: Segundos entre envíos (defecto: 10)
+- `PATH_IMAGEN`: Ruta específica a una imagen (opcional)
 
-**Directorio de origen:** `./backend/data/test/testImages`
+**Directorio de origen:** `./backend/data/test/testImages` (o ruta específica)
 
 **Uso:**
 ```bash
+# Modo estándar (usa imágenes del directorio de prueba)
 ./enviarImagenes.sh [NUM_IMAGENES] [INTERVALO]
+
+# Modo específico (envía una imagen concreta)
+./enviarImagenes.sh 1 0 /ruta/a/imagen.jpg
 ```
 
 **Ejemplos:**
@@ -96,6 +101,9 @@ chmod +x *.sh
 
 # Enviar 1 imagen (por defecto)
 ./enviarImagenes.sh
+
+# Enviar una imagen específica
+./enviarImagenes.sh 1 0 ../backend/data/test/downloadImages/2025-05-25-10-54-32.jpg
 ```
 
 ---
@@ -172,29 +180,35 @@ curl -X GET http://localhost:8080/api/sensores
 
 ## 5️⃣ **updateImages.sh**
 
-**Descripción**: Sincroniza la caché local de imágenes con las imágenes más recientes de Cloudinary.
+**Descripción**: Servicio de monitorización continua que sincroniza automáticamente la caché local con las imágenes más recientes de Cloudinary.
 
 **Uso**:
 ```bash
-./updateImages.sh [password]
+./updateImages.sh [password] [intervalo]
 ```
 
 **Características**:
+- Ejecución en bucle infinito
+- Monitorización periódica configurable (intervalo en segundos)
 - Descarga la imagen más reciente de Cloudinary
 - Compara con la imagen más reciente de la caché local
-- Si la imagen de Cloudinary es más reciente, la añade a la caché
-- Si la caché supera 14 imágenes, elimina la más antigua
-- Mantiene la caché actualizada con las imágenes más recientes
+- Si la imagen de Cloudinary es más reciente, la envía directamente al servidor
+- El servidor se encarga automáticamente de la gestión de la caché
+- Muestra mensajes informativos sobre el estado de cada comprobación
 
 **Parámetros**:
 - `password` - (Opcional) Contraseña de administrador. Si no se proporciona, se solicitará.
+- `intervalo` - (Opcional) Segundos entre cada comprobación (defecto: 30)
 
 **Ejemplo**:
 ```bash
-# Con contraseña como parámetro
+# Con contraseña como parámetro y revisión cada 60 segundos
+./updateImages.sh miContraseñaAdmin 60
+
+# Con contraseña como parámetro y revisión cada 30 segundos (valor por defecto)
 ./updateImages.sh miContraseñaAdmin
 
-# Sin parámetro (pedirá contraseña)
+# Sin parámetros (pedirá contraseña e usará intervalo por defecto)
 ./updateImages.sh
 ```
 
@@ -202,10 +216,8 @@ curl -X GET http://localhost:8080/api/sensores
 - Servidor backend ejecutándose
 - Contraseña de administrador válida
 - Configuración de Cloudinary en el backend
+- Script enviarImagenes.sh con permisos de ejecución
 
-**Resolución de Problemas**:
-- Si aparece "Error al descargar la imagen", verifica la contraseña y la conexión al servidor
-- Si muestra "No se encontraron imágenes descargadas", el endpoint de Cloudinary podría no estar funcionando
 
 ---
 

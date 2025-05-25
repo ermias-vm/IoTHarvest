@@ -7,8 +7,8 @@ dataset/
 backend/data/*
 !backend/data/README.md
 !backend/data/mail
-!backend/data/test
+backend/data/test/*
+!backend/data/test/testImages
 watch-predict.log
 watch-predict.pid
 venv/
-test/downloadImages
