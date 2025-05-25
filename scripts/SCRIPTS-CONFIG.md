@@ -170,6 +170,45 @@ curl -X GET http://localhost:8080/api/sensores
 ```
 ---
 
+## 5️⃣ **updateImages.sh**
+
+**Descripción**: Sincroniza la caché local de imágenes con las imágenes más recientes de Cloudinary.
+
+**Uso**:
+```bash
+./updateImages.sh [password]
+```
+
+**Características**:
+- Descarga la imagen más reciente de Cloudinary
+- Compara con la imagen más reciente de la caché local
+- Si la imagen de Cloudinary es más reciente, la añade a la caché
+- Si la caché supera 14 imágenes, elimina la más antigua
+- Mantiene la caché actualizada con las imágenes más recientes
+
+**Parámetros**:
+- `password` - (Opcional) Contraseña de administrador. Si no se proporciona, se solicitará.
+
+**Ejemplo**:
+```bash
+# Con contraseña como parámetro
+./updateImages.sh miContraseñaAdmin
+
+# Sin parámetro (pedirá contraseña)
+./updateImages.sh
+```
+
+**Requisitos**:
+- Servidor backend ejecutándose
+- Contraseña de administrador válida
+- Configuración de Cloudinary en el backend
+
+**Resolución de Problemas**:
+- Si aparece "Error al descargar la imagen", verifica la contraseña y la conexión al servidor
+- Si muestra "No se encontraron imágenes descargadas", el endpoint de Cloudinary podría no estar funcionando
+
+---
+
 ## 📁 **Estructura de Directorios de Prueba**
 
 ```

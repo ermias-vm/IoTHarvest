@@ -55,6 +55,7 @@ const sensorSchemaOptimized = new mongoose.Schema(
     humedad_suelo: { type: Number, required: true },
     status: { type: Number, required: true },
     timeServer: { type: Date, default: Date.now },
+    isTestData: { type: Boolean, default: false },
   },
   {
     timeseries: {
@@ -487,23 +488,33 @@ app.post('/api/images', cacheUpload.single('imagen'), async (req, res) => {
 app.post('/api/sensores', async (req, res) => {
   const { temperatura, humedad_aire, humedad_suelo, bateria, status } = req.body;
 
-  // Por defecto es false, solo será true si el header está presente y es 'true'
+  // Verificamos si es test data para logs, pero no lo guardamos en el esquema optimizado
   const isTestData = req.headers['x-test-data'] === 'true';
+  if (isTestData) {
+    console.log('[SENSORES] Recibidos datos de prueba');
+  }
 
   try {
+    // Datos para el esquema optimizado (sin isTestData)
     const datos = { 
       temperatura, 
       humedad_aire, 
       humedad_suelo, 
       bateria, 
       status, 
-      timeServer: new Date(),
-      isTestData // este campo indica si es test o no
+      timeServer: new Date()
     };
 
-    actualizarSensorCacheRam(datos);
-    actualizarSensorCache(datos);
-    guardarSensorHistorico(datos);
+    // Para la caché y el archivo JSON redundante incluimos isTestData 
+    // (esto no afecta a la base de datos)
+    const datosCompletos = {
+      ...datos,
+      isTestData
+    };
+
+    actualizarSensorCacheRam(datosCompletos);
+    actualizarSensorCache(datosCompletos);
+    guardarSensorHistorico(datosCompletos);
 
     const sensor = new Sensor(datos);
     await sensor.save();

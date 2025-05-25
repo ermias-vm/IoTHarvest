@@ -5,7 +5,7 @@
 # - INTERVALO: segundos entre cada envío (por defecto 10)
 # Ejemplo: ./enviarImagenes.sh 7 10
 
-IN_DIR="./backend/data/test/testImages"
+IN_DIR="../backend/data/test/testImages"
 SERVER_URL="http://localhost:8080/api/images"
 INTERVAL=10
 NUM_IMAGES=1

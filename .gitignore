@@ -11,3 +11,4 @@ backend/data/*
 watch-predict.log
 watch-predict.pid
 venv/
+test/downloadImages
