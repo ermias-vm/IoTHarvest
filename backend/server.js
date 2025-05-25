@@ -488,34 +488,33 @@ app.post('/api/images', cacheUpload.single('imagen'), async (req, res) => {
 app.post('/api/sensores', async (req, res) => {
   const { temperatura, humedad_aire, humedad_suelo, bateria, status } = req.body;
 
-  // Verificamos si es test data para logs, pero no lo guardamos en el esquema optimizado
+  // Verificamos si es test data para logs, usando el header 'x-test-data'
   const isTestData = req.headers['x-test-data'] === 'true';
   if (isTestData) {
     console.log('[SENSORES] Recibidos datos de prueba');
   }
 
   try {
-    // Datos para el esquema optimizado (sin isTestData)
     const datos = { 
       temperatura, 
       humedad_aire, 
       humedad_suelo, 
       bateria, 
       status, 
-      timeServer: new Date()
+      timeServer: new Date(),
+      isTestData // true = datos de prueba, false = datos reales (ESP32)
     };
 
-    // Para la caché y el archivo JSON redundante incluimos isTestData 
-    // (esto no afecta a la base de datos)
+  
     const datosCompletos = {
-      ...datos,
-      isTestData
+      ...datos
     };
 
     actualizarSensorCacheRam(datosCompletos);
     actualizarSensorCache(datosCompletos);
     guardarSensorHistorico(datosCompletos);
 
+    // Usamos el mismo objeto datos que ya incluye isTestData
     const sensor = new Sensor(datos);
     await sensor.save();
 
