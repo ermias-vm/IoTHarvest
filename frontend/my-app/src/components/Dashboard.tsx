@@ -175,7 +175,7 @@ const Dashboard = () => {
                     <>
                       <p>Temperature: {sensorData.temperatura}°C</p>
                       <p>Air Humidity: {sensorData.humedad_aire}%</p>
-                      <p>Ground Humidity: {sensorData.humedad_suelo}%</p>
+                      <p>Ground Humidity: {sensorData.humedad_suelo}</p>
                       <p>Last Update: {sensorData.timeServer || 'N/A'}</p>
                     </>
                   ) : (
