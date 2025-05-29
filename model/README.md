@@ -13,6 +13,7 @@ Utiliza una arquitectura de red neuronal convolucional **DenseNet121** de Keras 
 
 ### Requisitos previos
 - Python 3.10+ con TensorFlow/Keras
+- Data set original [Mendeley Data](https://data.mendeley.com/datasets/s973cz2jcd/1)
 - Dataset organizado según esta estructura:
 ```
 dataset/
