@@ -9,6 +9,14 @@ const char* password = "xxx";
 // Dirección IP del servidor y puerto
 const char* serverUrl = "http://nattech.fib.upc.edu:40480/api/images";
 
+
+
+/********** DISCLAIMER **********/
+/*En el momento que se desconecte la placa del PC para tenerla ejecutando el código
+de forma autónoma (alimentándola con una fuente externa), hay que comentar, o eliminar,
+todas las líneas de código que utilizan el puerto serie. Si no, el puerto serie no encuentra
+nadie que lo esté escuchando y la ejecución del código no avanza*/
+
 // Configuración de la cámara AI Thinker
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1

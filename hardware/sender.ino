@@ -10,6 +10,10 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+/********** DISCLAIMER **********/
+/* La placa utilizada para realizar la tarea de sender tiene incorporada una pantalla OLED, por lo que los pines
+RX y TX están ocupados. No funciona el puerto serie. Se ha utilizado el display OLED como puerto serie para mostrar
+mensajes de error, el resultado de la lectura medida, entre otros.*/
 
 // Configuración sensor DHT
 #define DHTTYPE  DHT11 
@@ -87,9 +91,26 @@ void setup() {
 void loop() {
   //lectura sensor temperatura
   float temperatura = dht.readTemperature();
-  float humitat = dht.readHumidity();
+  float humAire = dht.readHumidity();
+  int humTerra = analogRead(34);
+  int status = 0;
 
-  String lectures = String(temperatura) + ";" + String(humitat);
+  while(temperatura == 0 && humAire == 0) {
+    temperatura = dht.readTemperature();
+    humAire = dht.readHumidity();
+    humTerra = analogRead(34);
+  }
+
+  if (temperatura > 38) {
+    status += 1;
+  }
+  if (humTerra >= 3900) {
+    status += 2;
+  }
+
+  //falta tema bateria, de moment no ho implementem
+
+  String lectures = String(temperatura) + ";" + String(humAire) + ";" + String(humTerra) + ";" + String(status);
 
   //envío de paquete LoRa a placa receptora
   LoRa.beginPacket();
@@ -112,5 +133,5 @@ void loop() {
 
   counter++;
   
-  delay(7000);
+  delay(1800000); //envio de datos cada 30 minutos. Cada hora se hace la media entre los valores leídos (4 lecturas/h) y se dibuja en el gráfico de Mongo
 }
